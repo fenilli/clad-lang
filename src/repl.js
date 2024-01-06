@@ -5,6 +5,7 @@ import {
     SyntaxToken,
 } from './compiler/syntax/index.js';
 import { Parser } from './compiler/parser.js';
+import { Evaluator } from './evaluator.js';
 
 /**
  * Represents a Read-Eval-Print Loop (REPL) class for interactive input and output.
@@ -64,6 +65,7 @@ export class REPL {
      */
     run() {
         let debug = true;
+        const evaluator = new Evaluator();
 
         this.#cli.on('line', (input) => {
             if (input === '#clear') return this.#write('\u001Bc');
@@ -81,7 +83,9 @@ export class REPL {
             const errors = parser.getDiagnostics();
             if (debug) this.#printTree(ast);
 
-            if (errors.length !== 0) {
+            if (errors.length === 0) {
+                this.#write(`${evaluator.evaluate(ast)}\n`);
+            } else {
                 this.#write('\x1b[31m');
                 for (const error of errors) {
                     this.#write(`${error}\n`);
