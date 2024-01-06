@@ -3,8 +3,9 @@ import {
     SyntaxToken,
 } from "./syntax/index.js";
 import {
-    SourceFile,
     NumericLiteral,
+    ParenthesizedExpression,
+    SourceFile,
 } from "./syntax/ast/index.js";
 import { Scanner } from "./scanner.js";
 
@@ -97,10 +98,44 @@ export class Parser {
      * @returns {SourceFile} The parsed source file syntax tree.
      */
     #sourceFile() {
-        const body = this.#numericLiteral();
+        const body = this.#expression();
         this.#consume(SyntaxKind.EndOfFileToken);
 
         return new SourceFile(body);
+    };
+
+    /**
+     * Parses an expression, delegating to the primaryExpression rule.
+     *
+     * @returns {NumericLiteral | ParenthesizedExpression} The parsed syntax node representing an expression.
+     */
+    #expression() {
+        return this.#primaryExpression();
+    };
+
+    /**
+     * Parses a primary expression based on the current token kind.
+     *
+     * @returns {NumericLiteral | ParenthesizedExpression} The parsed syntax node representing a primary expression.
+     */
+    #primaryExpression() {
+        switch (this.#current.kind) {
+            case SyntaxKind.OpenParenToken: return this.#parenthesizedExpression();
+            default: return this.#numericLiteral();
+        };
+    };
+
+    /**
+     * Parses a parenthesized expression, including the opening and closing parentheses.
+     *
+     * @returns {ParenthesizedExpression} The parsed syntax node representing a parenthesized expression.
+     */
+    #parenthesizedExpression() {
+        this.#consume(SyntaxKind.OpenParenToken);
+        const expression = this.#expression();
+        this.#consume(SyntaxKind.CloseParenToken);
+
+        return new ParenthesizedExpression(expression);
     };
 
     /**

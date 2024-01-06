@@ -1,6 +1,7 @@
 import {
     SyntaxKind,
     SyntaxNode,
+    SyntaxToken,
 } from '../index.js';
 
 /**
@@ -12,7 +13,7 @@ export class NumericLiteral extends SyntaxNode {
     /**
      * Creates an instance of NumericLiteral.
      *
-     * @param {SyntaxNode} number - The number syntax token.
+     * @param {SyntaxToken} number - The number syntax token.
      */
     constructor(number) {
         super(SyntaxKind.NumericLiteral, number.pos);
