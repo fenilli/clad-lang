@@ -1,4 +1,5 @@
 import {
+    SyntaxFacts,
     SyntaxKind,
     SyntaxToken,
 } from "./syntax/index.js";
@@ -109,42 +110,22 @@ export class Parser {
      * Parses an expression, delegating to the primaryExpression rule.
      * 
      * @typedef {PrimaryExpression | InfixExpression} Expression
+     * 
+     * @param {number} prevPrecedence - The previous called precedence level
      *
      * @returns {Expression} The parsed syntax node representing an expression.
      */
-    #expression() {
-        return this.#term();
-    };
-
-    /**
-     * Parses a term, handling addition and subtraction operations.
-     *
-     * @returns {Expression} The parsed syntax node representing a term.
-     */
-    #term() {
-        let left = this.#factor();
-
-        while (this.#current.kind === SyntaxKind.PlusToken || this.#current.kind === SyntaxKind.MinusToken) {
-            const operator = this.#consume(this.#current.kind);
-            const right = this.#factor();
-            left = new InfixExpression(left, operator, right);
-        };
-
-        return left;
-    };
-
-    /**
-     * Parses a factor, handling multiplication and division operations.
-     *
-     * @returns {Expression} The parsed syntax node representing a factor.
-     */
-    #factor() {
+    #expression(prevPrecedence = 0) {
         /** @type {Expression} */
         let left = this.#primaryExpression();
 
-        while (this.#current.kind === SyntaxKind.AsteriskToken || this.#current.kind === SyntaxKind.SlashToken) {
+        while (true) {
+            const precedence = SyntaxFacts.getInfixOperatorPrecedence(this.#current.kind);
+
+            if (precedence === 0 || precedence <= prevPrecedence) break;
+
             const operator = this.#consume(this.#current.kind);
-            const right = this.#primaryExpression();
+            const right = this.#expression(precedence);
             left = new InfixExpression(left, operator, right);
         };
 
