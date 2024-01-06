@@ -2,7 +2,10 @@ import {
     SyntaxKind,
     SyntaxToken,
 } from "./syntax/index.js";
-import { SourceFile } from "./syntax/ast/SourceFile.js";
+import {
+    SourceFile,
+    NumericLiteral,
+} from "./syntax/ast/index.js";
 import { Scanner } from "./scanner.js";
 
 /**
@@ -80,13 +83,32 @@ export class Parser {
     };
 
     /**
+     * Parses the source file.
+     *
+     * @returns {SourceFile} The root node of the parsed syntax tree.
+     */
+    parse() {
+        return this.#sourceFile();
+    };
+
+    /**
      * Parses the input tokens and generates a SourceFile.
      * 
      * @returns {SourceFile} The parsed source file syntax tree.
      */
-    parse() {
-        const eof = this.#consume(SyntaxKind.EndOfFileToken);
+    #sourceFile() {
+        const body = this.#numericLiteral();
+        this.#consume(SyntaxKind.EndOfFileToken);
 
-        return new SourceFile(eof);
+        return new SourceFile(body);
+    };
+
+    /**
+     * Creates a NumericLiteral instance by consuming a NumberToken.
+     *
+     * @returns {NumericLiteral} A NumericLiteral instance.
+     */
+    #numericLiteral() {
+        return new NumericLiteral(this.#consume(SyntaxKind.NumberToken));
     };
 };

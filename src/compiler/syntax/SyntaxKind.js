@@ -18,6 +18,9 @@ export const SyntaxKind = {
     OpenParenToken: 'OpenParenToken',
     CloseParenToken: 'CloseParenToken',
 
+    // Literals:
+    NumericLiteral: 'NumericLiteral',
+
     // Misc:
     SourceFile: 'SourceFile',
 };

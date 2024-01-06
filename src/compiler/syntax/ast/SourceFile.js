@@ -1,16 +1,16 @@
 import {
     SyntaxKind,
-    SyntaxNode
+    SyntaxNode,
 } from '../index.js';
 
 /**
- * Represents a SourceFile class that extends SyntaxNode.
+ * Represents a source file in the syntax tree.
  * 
  * @extends {SyntaxNode}
  */
 export class SourceFile extends SyntaxNode {
     /**
-     * Creates a SyntaxToken.
+     * Creates an instance of SourceFile.
      * 
      * @param {SyntaxNode} body - The body of the source file
      */
