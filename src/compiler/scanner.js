@@ -1,24 +1,4 @@
-import { SyntaxKind, SyntaxNode } from './syntax/index.js';
-
-/**
- * Represents a syntax token in a tree structure.
- */
-export class SyntaxToken extends SyntaxNode {
-    /**
-     * Creates a SyntaxToken.
-     * 
-     * @param {SyntaxKind} kind - The kind of syntax node.
-     * @param {number} pos - The position of the syntax node in the source code.
-     * @param {string} text - The text representation of the syntax token.
-     * @param {any} [value] - The value associated with the syntax token.
-     */
-    constructor(kind, pos, text, value) {
-        super(kind, pos);
-
-        this.text = text;
-        this.value = value;
-    };
-};
+import { SyntaxKind, SyntaxToken } from './syntax/index.js';
 
 /**
  * Class representing a scanner for lexical analysis.
@@ -45,16 +25,22 @@ export class Scanner {
     ];
 
     /**
+     * Array to store diagnostic messages.
+     * 
      * @type {string[]}
      */
     #diagnostics = [];
 
     /**
+     * The input string to be scanned.
+     * 
      * @type {string}
      */
     #input;
 
     /**
+     * Cursor position for input slicing.
+     * 
      * @type {number}
      */
     #cursor = 0;
@@ -98,6 +84,3 @@ export class Scanner {
         return new SyntaxToken(SyntaxKind.UnexpectedToken, this.#cursor++, slice.slice(0, 1));
     };
 };
-
-const scanner = new Scanner('10');
-console.log(scanner.next());
