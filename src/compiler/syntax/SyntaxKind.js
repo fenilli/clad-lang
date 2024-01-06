@@ -19,6 +19,7 @@ export const SyntaxKind = {
     CloseParenToken: 'CloseParenToken',
 
     // Expressions:
+    InfixExpression: 'InfixExpression',
     ParenthesizedExpression: 'ParenthesizedExpression',
 
     // Literals:

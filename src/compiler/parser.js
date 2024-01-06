@@ -3,6 +3,7 @@ import {
     SyntaxToken,
 } from "./syntax/index.js";
 import {
+    InfixExpression,
     NumericLiteral,
     ParenthesizedExpression,
     SourceFile,
@@ -106,17 +107,55 @@ export class Parser {
 
     /**
      * Parses an expression, delegating to the primaryExpression rule.
+     * 
+     * @typedef {PrimaryExpression | InfixExpression} Expression
      *
-     * @returns {NumericLiteral | ParenthesizedExpression} The parsed syntax node representing an expression.
+     * @returns {Expression} The parsed syntax node representing an expression.
      */
     #expression() {
-        return this.#primaryExpression();
+        return this.#term();
+    };
+
+    /**
+     * Parses a term, handling addition and subtraction operations.
+     *
+     * @returns {Expression} The parsed syntax node representing a term.
+     */
+    #term() {
+        let left = this.#factor();
+
+        while (this.#current.kind === SyntaxKind.PlusToken || this.#current.kind === SyntaxKind.MinusToken) {
+            const operator = this.#consume(this.#current.kind);
+            const right = this.#factor();
+            return new InfixExpression(left, operator, right);
+        };
+
+        return left;
+    };
+
+    /**
+     * Parses a factor, handling multiplication and division operations.
+     *
+     * @returns {Expression} The parsed syntax node representing a factor.
+     */
+    #factor() {
+        let left = this.#primaryExpression();
+
+        while (this.#current.kind === SyntaxKind.AsteriskToken || this.#current.kind === SyntaxKind.SlashToken) {
+            const operator = this.#consume(this.#current.kind);
+            const right = this.#primaryExpression();
+            return new InfixExpression(left, operator, right);
+        };
+
+        return left;
     };
 
     /**
      * Parses a primary expression based on the current token kind.
+     * 
+     * @typedef {NumericLiteral | ParenthesizedExpression} PrimaryExpression
      *
-     * @returns {NumericLiteral | ParenthesizedExpression} The parsed syntax node representing a primary expression.
+     * @returns {PrimaryExpression} The parsed syntax node representing a primary expression.
      */
     #primaryExpression() {
         switch (this.#current.kind) {
