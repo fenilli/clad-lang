@@ -49,7 +49,7 @@ export class REPL {
      * @param {boolean} isLast - Indicates whether the current node is the last child.
      */
     #printTree(node, indent = '', isLast = true) {
-        this.#write(`${indent}${isLast ? '└─' : '├─'}${node.kind}`);
+        this.#write(`${indent}${isLast ? '└───' : '├───'}${node.kind}`);
 
         if (node instanceof SyntaxToken && typeof node.value !== 'undefined') this.#write(` ${node.value}`);
         this.#write('\n');
