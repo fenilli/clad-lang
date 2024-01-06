@@ -127,7 +127,7 @@ export class Parser {
         while (this.#current.kind === SyntaxKind.PlusToken || this.#current.kind === SyntaxKind.MinusToken) {
             const operator = this.#consume(this.#current.kind);
             const right = this.#factor();
-            return new InfixExpression(left, operator, right);
+            left = new InfixExpression(left, operator, right);
         };
 
         return left;
@@ -139,12 +139,13 @@ export class Parser {
      * @returns {Expression} The parsed syntax node representing a factor.
      */
     #factor() {
+        /** @type {Expression} */
         let left = this.#primaryExpression();
 
         while (this.#current.kind === SyntaxKind.AsteriskToken || this.#current.kind === SyntaxKind.SlashToken) {
             const operator = this.#consume(this.#current.kind);
             const right = this.#primaryExpression();
-            return new InfixExpression(left, operator, right);
+            left = new InfixExpression(left, operator, right);
         };
 
         return left;
