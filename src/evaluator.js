@@ -6,6 +6,7 @@ import {
     InfixExpression,
     NumericLiteral,
     ParenthesizedExpression,
+    PrefixExpression,
     SourceFile,
 } from './compiler/syntax/ast/index.js';
 
@@ -21,6 +22,16 @@ export class Evaluator {
      * @throws {Error} Throws an error for unexpected node types or operators.
      */
     evaluate(node) {
+        if (node instanceof PrefixExpression) {
+            const operand = this.evaluate(node.operand);
+
+            switch (node.operator.kind) {
+                case SyntaxKind.PlusToken: return operand;
+                case SyntaxKind.MinusToken: return -operand;
+            };
+
+            throw new Error(`Unexpected prefix operator <${node.operator.kind}>`);
+        };
         if (node instanceof InfixExpression) {
             const left = this.evaluate(node.left);
             const right = this.evaluate(node.right);
@@ -30,8 +41,9 @@ export class Evaluator {
                 case SyntaxKind.MinusToken: return left - right;
                 case SyntaxKind.AsteriskToken: return left * right;
                 case SyntaxKind.SlashToken: return left / right;
-                default: throw new Error(`Unexpected infix operator <${node.operator.kind}>`);
             };
+
+            throw new Error(`Unexpected infix operator <${node.operator.kind}>`);
         };
         if (node instanceof NumericLiteral) return node.number.value;
         if (node instanceof ParenthesizedExpression) return this.evaluate(node.expression);
