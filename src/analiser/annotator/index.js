@@ -72,30 +72,45 @@ export class Annotator {
     #annotatedInfixExpression(node) {
         /** @type {AnnotatedNode} */
         const left = this.annotate(node.left);
-        let operator;
-        switch (node.operator.kind) {
-            case SyntaxKind.PlusToken: {
-                operator = AnnotatedKind.Addition;
-                break;
-            };
-            case SyntaxKind.MinusToken: {
-                operator = AnnotatedKind.Subtraction;
-                break;
-            };
-            case SyntaxKind.AsteriskToken: {
-                operator = AnnotatedKind.Multiplication;
-                break;
-            };
-            case SyntaxKind.SlashToken: {
-                operator = AnnotatedKind.Division;
-                break;
-            };
-            default: throw new Error(`Unexpected infix operator <${node.operator.kind}>.`);
-        };
         /** @type {AnnotatedNode} */
         const right = this.annotate(node.right);
 
-        if (left.type !== 'number' || right.type !== 'number') {
+        let operator;
+        if (left.type === 'number' && right.type === 'number') {
+            switch (node.operator.kind) {
+                case SyntaxKind.PlusToken: {
+                    operator = AnnotatedKind.Addition;
+                    break;
+                };
+                case SyntaxKind.MinusToken: {
+                    operator = AnnotatedKind.Subtraction;
+                    break;
+                };
+                case SyntaxKind.AsteriskToken: {
+                    operator = AnnotatedKind.Multiplication;
+                    break;
+                };
+                case SyntaxKind.SlashToken: {
+                    operator = AnnotatedKind.Division;
+                    break;
+                };
+            };
+        };
+
+        if (left.type === 'boolean' && right.type === 'boolean') {
+            switch (node.operator.kind) {
+                case SyntaxKind.DoubleAmpersandToken: {
+                    operator = AnnotatedKind.LogicalAnd;
+                    break;
+                };
+                case SyntaxKind.DoublePipeToken: {
+                    operator = AnnotatedKind.LogicalOr;
+                    break;
+                };
+            };
+        };
+
+        if (typeof operator === 'undefined') {
             this.#diagnostics.push(`Infix operator <${node.operator.kind}> is not defined for types <${left.kind}> and <${right.kind}>.`);
             return left;
         };
@@ -129,22 +144,33 @@ export class Annotator {
      * @param {PrefixExpression} node
      */
     #annotatedPrefixExpression(node) {
-        let operator;
-        switch (node.operator.kind) {
-            case SyntaxKind.PlusToken: {
-                operator = AnnotatedKind.Identity;
-                break;
-            };
-            case SyntaxKind.MinusToken: {
-                operator = AnnotatedKind.Negation;
-                break;
-            };
-            default: throw new Error(`Unexpected prefix operator <${node.operator.kind}>.`);
-        };
         /** @type {AnnotatedNode} */
         const operand = this.annotate(node.operand);
 
-        if (operand.type !== 'number') {
+        let operator;
+        if (operand.type === 'number') {
+            switch (node.operator.kind) {
+                case SyntaxKind.PlusToken: {
+                    operator = AnnotatedKind.Identity;
+                    break;
+                };
+                case SyntaxKind.MinusToken: {
+                    operator = AnnotatedKind.Negation;
+                    break;
+                };
+            };
+        };
+
+        if (operand.type === 'boolean') {
+            switch (node.operator.kind) {
+                case SyntaxKind.BangToken: {
+                    operator = AnnotatedKind.LogicalNegation;
+                    break;
+                };
+            };
+        };
+
+        if (typeof operator === 'undefined') {
             this.#diagnostics.push(`Prefix operator <${node.operator.kind}> is not defined for type <${operand.kind}>.`);
             return operand;
         };
