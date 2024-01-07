@@ -1,7 +1,7 @@
 import { SyntaxKind } from './index.js';
 
 /**
- * Represents a syntax token in a tree structure.
+ * Represents a syntax node in a tree structure.
  */
 export class SyntaxNode {
     /**

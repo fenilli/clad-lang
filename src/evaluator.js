@@ -1,14 +1,14 @@
 import {
-    InfixExpression,
-    NumericLiteral,
-    ParenthesizedExpression,
-    PrefixExpression,
-    SourceFile,
-} from './analiser/syntax/nodes/index.js';
+    AnnotatedInfixExpression,
+    AnnotatedNumericLiteral,
+    AnnotatedParenthesizedExpression,
+    AnnotatedPrefixExpression,
+    AnnotatedSourceFile,
+} from './analiser/annotator/nodes/index.js';
 import {
-    SyntaxKind,
-    SyntaxNode,
-} from './analiser/syntax/factory/index.js';
+    AnnotatedKind,
+    AnnotatedNode,
+} from './analiser/annotator/factory/index.js';
 
 /**
  * Evaluator class responsible for evaluating syntax tree nodes.
@@ -17,37 +17,35 @@ export class Evaluator {
     /**
      * Evaluates a syntax tree node.
      *
-     * @param {SyntaxNode} node - The syntax tree node to evaluate.
+     * @param {AnnotatedNode} node - The syntax tree node to evaluate.
      * @returns {number} The result of the evaluation.
      * @throws {Error} Throws an error for unexpected node types or operators.
      */
     evaluate(node) {
-        if (node instanceof PrefixExpression) {
-            const operand = this.evaluate(node.operand);
-
-            switch (node.operator.kind) {
-                case SyntaxKind.PlusToken: return operand;
-                case SyntaxKind.MinusToken: return -operand;
-            };
-
-            throw new Error(`Unexpected prefix operator <${node.operator.kind}>`);
-        };
-        if (node instanceof InfixExpression) {
+        if (node instanceof AnnotatedInfixExpression) {
             const left = this.evaluate(node.left);
             const right = this.evaluate(node.right);
 
-            switch (node.operator.kind) {
-                case SyntaxKind.PlusToken: return left + right;
-                case SyntaxKind.MinusToken: return left - right;
-                case SyntaxKind.AsteriskToken: return left * right;
-                case SyntaxKind.SlashToken: return left / right;
+            switch (node.operator) {
+                case AnnotatedKind.Addition: return left + right;
+                case AnnotatedKind.Subtraction: return left - right;
+                case AnnotatedKind.Multiplication: return left * right;
+                case AnnotatedKind.Division: return left / right;
+                default: throw new Error(`Unexpected infix operator <${node.operator}>`);
             };
-
-            throw new Error(`Unexpected infix operator <${node.operator.kind}>`);
         };
-        if (node instanceof NumericLiteral) return node.number.value;
-        if (node instanceof ParenthesizedExpression) return this.evaluate(node.expression);
-        if (node instanceof SourceFile) return this.evaluate(node.body);
+        if (node instanceof AnnotatedNumericLiteral) return node.value;
+        if (node instanceof AnnotatedParenthesizedExpression) return this.evaluate(node.expression);
+        if (node instanceof AnnotatedPrefixExpression) {
+            const operand = this.evaluate(node.operand);
+
+            switch (node.operator) {
+                case AnnotatedKind.Identity: return operand;
+                case AnnotatedKind.Negation: return -operand;
+                default: throw new Error(`Unexpected prefix operator <${node.operator}>`);
+            };
+        };
+        if (node instanceof AnnotatedSourceFile) return this.evaluate(node.body);
 
         throw new Error(`Unexpected node <${node.kind}>`);
     };

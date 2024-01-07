@@ -3,6 +3,7 @@
     "scanner",
     "parser",
     "evaluator",
-    "repl"
+    "repl",
+    "annotator"
   ]
 }

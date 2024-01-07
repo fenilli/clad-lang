@@ -5,6 +5,7 @@ import {
     SyntaxToken,
 } from './analiser/syntax/factory/index.js';
 import { Parser } from './analiser/syntax/parser.js';
+import { Annotator } from './analiser/annotator/index.js';
 import { Evaluator } from './evaluator.js';
 
 /**
@@ -80,11 +81,14 @@ export class REPL {
             const parser = new Parser(input);
             const ast = parser.parse();
 
-            const errors = parser.getDiagnostics();
+            const annotator = new Annotator();
+            const annotatedAst = annotator.annotate(ast);
+
+            const errors = parser.getDiagnostics().concat(annotator.getDiagnostics());
             if (debug) this.#printTree(ast);
 
             if (errors.length === 0) {
-                this.#write(`${evaluator.evaluate(ast)}\n`);
+                this.#write(`${evaluator.evaluate(annotatedAst)}\n`);
             } else {
                 this.#write('\x1b[31m');
                 for (const error of errors) {
