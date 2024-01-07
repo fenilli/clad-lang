@@ -12,6 +12,10 @@ export class Scanner {
     #spec = [
         [SyntaxKind.WhitespaceToken, /^\s+/],
 
+        // Keywords:
+        [SyntaxKind.FalseKeyword, /^false/, () => false],
+        [SyntaxKind.TrueKeyword, /^true/, () => true],
+
         // Symbols:
         [SyntaxKind.PlusToken, /^\+/],
         [SyntaxKind.MinusToken, /^\-/],

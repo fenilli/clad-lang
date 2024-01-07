@@ -18,12 +18,17 @@ export const SyntaxKind = {
     OpenParenToken: 'OpenParenToken',
     CloseParenToken: 'CloseParenToken',
 
+    // Keywords:
+    FalseKeyword: 'FalseKeyword',
+    TrueKeyword: 'TrueKeyword',
+
     // Expressions:
     InfixExpression: 'InfixExpression',
     ParenthesizedExpression: 'ParenthesizedExpression',
     PrefixExpression: 'PrefixExpression',
 
     // Literals:
+    BooleanLiteral: 'BooleanLiteral',
     NumericLiteral: 'NumericLiteral',
 
     // Misc:
