@@ -1,4 +1,5 @@
 import {
+    AnnotatedBooleanLiteral,
     AnnotatedInfixExpression,
     AnnotatedNumericLiteral,
     AnnotatedParenthesizedExpression,
@@ -34,6 +35,7 @@ export class Evaluator {
                 default: throw new Error(`Unexpected infix operator <${node.operator}>`);
             };
         };
+        if (node instanceof AnnotatedBooleanLiteral) return node.value;
         if (node instanceof AnnotatedNumericLiteral) return node.value;
         if (node instanceof AnnotatedParenthesizedExpression) return this.evaluate(node.expression);
         if (node instanceof AnnotatedPrefixExpression) {
