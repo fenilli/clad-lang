@@ -1,4 +1,5 @@
 import {
+    BooleanLiteral,
     InfixExpression,
     NumericLiteral,
     ParenthesizedExpression,
@@ -144,12 +145,15 @@ export class Parser {
     /**
      * Parses a primary expression based on the current token kind.
      * 
-     * @typedef {NumericLiteral | ParenthesizedExpression} PrimaryExpression
+     * @typedef {NumericLiteral | BooleanLiteral | ParenthesizedExpression} PrimaryExpression
      *
      * @returns {PrimaryExpression} The parsed syntax node representing a primary expression.
      */
     #primaryExpression() {
         switch (this.#current.kind) {
+            case SyntaxKind.TrueKeyword:
+            case SyntaxKind.FalseKeyword:
+                return this.#booleanLiteral(this.#current.kind);
             case SyntaxKind.OpenParenToken: return this.#parenthesizedExpression();
             default: return this.#numericLiteral();
         };
@@ -166,6 +170,17 @@ export class Parser {
         this.#consume(SyntaxKind.CloseParenToken);
 
         return new ParenthesizedExpression(expression);
+    };
+
+    /**
+     * Creates a BooleanLiteral instance by consuming a TrueKeyword or FalseKeyword.
+     * 
+     * @param {SyntaxKind} kind - TrueKeyword or FalseKeyword
+     *
+     * @returns {BooleanLiteral} A NumericLiteral instance.
+     */
+    #booleanLiteral(kind) {
+        return new BooleanLiteral(this.#consume(kind));
     };
 
     /**

@@ -1,3 +1,4 @@
+export { BooleanLiteral } from './BooleanLiteral.js';
 export { InfixExpression } from './InfixExpression.js';
 export { NumericLiteral } from './NumericLiteral.js';
 export { ParenthesizedExpression } from './ParenthesizedExpression.js';
