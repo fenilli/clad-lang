@@ -19,7 +19,9 @@ export class Evaluator {
      * Evaluates a syntax tree node.
      *
      * @param {AnnotatedNode} node - The syntax tree node to evaluate.
-     * @returns {number} The result of the evaluation.
+     * 
+     * @returns {*} The result of the evaluation.
+     * 
      * @throws {Error} Throws an error for unexpected node types or operators.
      */
     evaluate(node) {
@@ -32,6 +34,8 @@ export class Evaluator {
                 case AnnotatedKind.Subtraction: return left - right;
                 case AnnotatedKind.Multiplication: return left * right;
                 case AnnotatedKind.Division: return left / right;
+                case AnnotatedKind.LogicalAnd: return left && right;
+                case AnnotatedKind.LogicalOr: return left || right;
                 default: throw new Error(`Unexpected infix operator <${node.operator}>`);
             };
         };
@@ -44,6 +48,7 @@ export class Evaluator {
             switch (node.operator) {
                 case AnnotatedKind.Identity: return operand;
                 case AnnotatedKind.Negation: return -operand;
+                case AnnotatedKind.LogicalNegation: return !operand;
                 default: throw new Error(`Unexpected prefix operator <${node.operator}>`);
             };
         };
