@@ -1,4 +1,4 @@
-import { SyntaxKind, SyntaxToken } from './syntax/index.js';
+import { SyntaxKind, SyntaxToken } from './factory/index.js';
 
 /**
  * Class representing a scanner for lexical analysis.

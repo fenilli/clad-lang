@@ -2,7 +2,7 @@ import {
     SyntaxKind,
     SyntaxNode,
     SyntaxToken,
-} from '../index.js';
+} from '../factory/index.js';
 
 /**
  * Represents a infix expression in the syntax tree.

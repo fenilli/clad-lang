@@ -1,15 +1,15 @@
 import {
-    SyntaxFacts,
-    SyntaxKind,
-    SyntaxToken,
-} from "./syntax/index.js";
-import {
     InfixExpression,
     NumericLiteral,
     ParenthesizedExpression,
     PrefixExpression,
     SourceFile,
-} from "./syntax/ast/index.js";
+} from './nodes/index.js';
+import {
+    SyntaxFacts,
+    SyntaxKind,
+    SyntaxToken,
+} from './factory/index.js';
 import { Scanner } from "./scanner.js";
 
 /**

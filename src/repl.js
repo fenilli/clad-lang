@@ -3,8 +3,8 @@ import rl from 'node:readline';
 import {
     SyntaxNode,
     SyntaxToken,
-} from './compiler/syntax/index.js';
-import { Parser } from './compiler/parser.js';
+} from './analiser/syntax/factory/index.js';
+import { Parser } from './analiser/syntax/parser.js';
 import { Evaluator } from './evaluator.js';
 
 /**

@@ -1,14 +1,14 @@
 import {
-    SyntaxKind,
-    SyntaxNode,
-} from './compiler/syntax/index.js';
-import {
     InfixExpression,
     NumericLiteral,
     ParenthesizedExpression,
     PrefixExpression,
     SourceFile,
-} from './compiler/syntax/ast/index.js';
+} from './analiser/syntax/nodes/index.js';
+import {
+    SyntaxKind,
+    SyntaxNode,
+} from './analiser/syntax/factory/index.js';
 
 /**
  * Evaluator class responsible for evaluating syntax tree nodes.

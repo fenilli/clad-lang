@@ -1,7 +1,7 @@
 import {
     SyntaxKind,
     SyntaxNode,
-} from '../index.js';
+} from '../factory/index.js';
 
 /**
  * Represents a source file in the syntax tree.

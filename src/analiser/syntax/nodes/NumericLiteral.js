@@ -2,7 +2,7 @@ import {
     SyntaxKind,
     SyntaxNode,
     SyntaxToken,
-} from '../index.js';
+} from '../factory/index.js';
 
 /**
  * Represents a numeric literal in the syntax tree.
