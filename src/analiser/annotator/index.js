@@ -14,6 +14,7 @@ import {
     AnnotatedBooleanLiteral,
     AnnotatedInfixExpression,
     AnnotatedNumericLiteral,
+    AnnotatedOperator,
     AnnotatedParenthesizedExpression,
     AnnotatedPrefixExpression,
     AnnotatedSourceFile,
@@ -79,19 +80,19 @@ export class Annotator {
         if (left.type === 'number' && right.type === 'number') {
             switch (node.operator.kind) {
                 case SyntaxKind.PlusToken: {
-                    operator = AnnotatedKind.Addition;
+                    operator = new AnnotatedOperator(AnnotatedKind.Addition, 'number');
                     break;
                 };
                 case SyntaxKind.MinusToken: {
-                    operator = AnnotatedKind.Subtraction;
+                    operator = new AnnotatedOperator(AnnotatedKind.Subtraction, 'number');
                     break;
                 };
                 case SyntaxKind.AsteriskToken: {
-                    operator = AnnotatedKind.Multiplication;
+                    operator = new AnnotatedOperator(AnnotatedKind.Multiplication, 'number');
                     break;
                 };
                 case SyntaxKind.SlashToken: {
-                    operator = AnnotatedKind.Division;
+                    operator = new AnnotatedOperator(AnnotatedKind.Division, 'number');
                     break;
                 };
             };
@@ -100,11 +101,11 @@ export class Annotator {
         if (left.type === 'boolean' && right.type === 'boolean') {
             switch (node.operator.kind) {
                 case SyntaxKind.DoubleAmpersandToken: {
-                    operator = AnnotatedKind.LogicalAnd;
+                    operator = new AnnotatedOperator(AnnotatedKind.LogicalAnd, 'boolean');
                     break;
                 };
                 case SyntaxKind.DoublePipeToken: {
-                    operator = AnnotatedKind.LogicalOr;
+                    operator = new AnnotatedOperator(AnnotatedKind.LogicalOr, 'boolean');
                     break;
                 };
             };
@@ -151,11 +152,11 @@ export class Annotator {
         if (operand.type === 'number') {
             switch (node.operator.kind) {
                 case SyntaxKind.PlusToken: {
-                    operator = AnnotatedKind.Identity;
+                    operator = new AnnotatedOperator(AnnotatedKind.Identity, 'number');
                     break;
                 };
                 case SyntaxKind.MinusToken: {
-                    operator = AnnotatedKind.Negation;
+                    operator = new AnnotatedOperator(AnnotatedKind.Negation, 'number');
                     break;
                 };
             };
@@ -164,7 +165,7 @@ export class Annotator {
         if (operand.type === 'boolean') {
             switch (node.operator.kind) {
                 case SyntaxKind.BangToken: {
-                    operator = AnnotatedKind.LogicalNegation;
+                    operator = new AnnotatedOperator(AnnotatedKind.LogicalNegation, 'boolean');
                     break;
                 };
             };
