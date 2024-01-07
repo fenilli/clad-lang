@@ -11,13 +11,15 @@ export const SyntaxKind = {
 
     NumberToken: 'NumberToken',
 
+    DoubleAmpersandToken: 'DoubleAmpersandToken',
+    DoublePipeToken: 'DoublePipeToken',
+    DoubleEqualToken: 'DoubleEqualToken',
+    BangEqualToken: 'BangEqualToken',
     PlusToken: 'PlusToken',
     MinusToken: 'MinusToken',
     AsteriskToken: 'AsteriskToken',
     SlashToken: 'SlashToken',
     BangToken: 'BangToken',
-    DoubleAmpersandToken: 'DoubleAmpersandToken',
-    DoublePipeToken: 'DoublePipeToken',
     OpenParenToken: 'OpenParenToken',
     CloseParenToken: 'CloseParenToken',
 

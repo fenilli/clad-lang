@@ -17,13 +17,15 @@ export class Scanner {
         [SyntaxKind.TrueKeyword, /^true/, () => true],
 
         // Symbols:
+        [SyntaxKind.BangEqualToken, /^\!\=/],
+        [SyntaxKind.DoubleEqualToken, /^\=\=/],
+        [SyntaxKind.DoubleAmpersandToken, /^\&\&/],
+        [SyntaxKind.DoublePipeToken, /^\|\|/],
         [SyntaxKind.PlusToken, /^\+/],
         [SyntaxKind.MinusToken, /^\-/],
         [SyntaxKind.AsteriskToken, /^\*/],
         [SyntaxKind.SlashToken, /^\//],
         [SyntaxKind.BangToken, /^\!/],
-        [SyntaxKind.DoubleAmpersandToken, /^\&\&/],
-        [SyntaxKind.DoublePipeToken, /^\|\|/],
         [SyntaxKind.OpenParenToken, /^\(/],
         [SyntaxKind.CloseParenToken, /^\)/],
 
