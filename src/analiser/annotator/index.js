@@ -122,10 +122,10 @@ export class Annotator {
                     break;
                 };
             };
-        }
+        };
 
         if (typeof operator === 'undefined') {
-            this.#diagnostics.push(`Infix operator <${node.operator.kind}> is not defined for types <${left.kind}> and <${right.kind}>.`);
+            this.#diagnostics.push(`Infix operator <${node.operator.text}> is not defined for types <${left.type}> and <${right.type}>.`);
             return left;
         };
 
@@ -185,7 +185,7 @@ export class Annotator {
         };
 
         if (typeof operator === 'undefined') {
-            this.#diagnostics.push(`Prefix operator <${node.operator.kind}> is not defined for type <${operand.kind}>.`);
+            this.#diagnostics.push(`Prefix operator <${node.operator.text}> is not defined for type <${operand.type}>.`);
             return operand;
         };
 
