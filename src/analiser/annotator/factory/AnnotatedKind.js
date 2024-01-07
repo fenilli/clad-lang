@@ -16,6 +16,8 @@ export const AnnotatedKind = {
     Division: 'Division',
     LogicalAnd: 'LogicalAnd',
     LogicalOr: 'LogicalOr',
+    Equals: 'Equals',
+    NotEquals: 'NotEquals',
 
     // Expressions:
     InfixExpression: 'InfixExpression',

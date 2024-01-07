@@ -111,6 +111,19 @@ export class Annotator {
             };
         };
 
+        if ((left.type === 'boolean' || left.type === 'number') && (right.type === 'boolean' || right.type === 'number')) {
+            switch (node.operator.kind) {
+                case SyntaxKind.BangEqualToken: {
+                    operator = new AnnotatedOperator(AnnotatedKind.NotEquals, 'boolean');
+                    break;
+                };
+                case SyntaxKind.DoubleEqualToken: {
+                    operator = new AnnotatedOperator(AnnotatedKind.Equals, 'boolean');
+                    break;
+                };
+            };
+        }
+
         if (typeof operator === 'undefined') {
             this.#diagnostics.push(`Infix operator <${node.operator.kind}> is not defined for types <${left.kind}> and <${right.kind}>.`);
             return left;
