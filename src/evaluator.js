@@ -36,6 +36,8 @@ export class Evaluator {
                 case AnnotatedKind.Division: return left / right;
                 case AnnotatedKind.LogicalAnd: return left && right;
                 case AnnotatedKind.LogicalOr: return left || right;
+                case AnnotatedKind.Equals: return left === right;
+                case AnnotatedKind.NotEquals: return left !== right;
                 default: throw new Error(`Unexpected infix operator <${node.operator}>`);
             };
         };
