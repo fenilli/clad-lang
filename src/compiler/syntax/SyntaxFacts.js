@@ -5,6 +5,21 @@ import { SyntaxKind } from "./index.js";
  */
 export class SyntaxFacts {
     /**
+     * Gets the prefix precedence level
+     * 
+     * @param {SyntaxKind} kind - The expected token kind.
+     */
+    static getPrefixOperatorPrecedence(kind) {
+        switch (kind) {
+            case SyntaxKind.PlusToken:
+            case SyntaxKind.MinusToken:
+                return 3;
+
+            default: return 0;
+        };
+    };
+
+    /**
      * Gets the infix precedence level
      * 
      * @param {SyntaxKind} kind - The expected token kind.

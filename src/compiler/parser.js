@@ -7,6 +7,7 @@ import {
     InfixExpression,
     NumericLiteral,
     ParenthesizedExpression,
+    PrefixExpression,
     SourceFile,
 } from "./syntax/ast/index.js";
 import { Scanner } from "./scanner.js";
@@ -109,15 +110,23 @@ export class Parser {
     /**
      * Parses an expression, delegating to the primaryExpression rule.
      * 
-     * @typedef {PrimaryExpression | InfixExpression} Expression
+     * @typedef {PrimaryExpression | InfixExpression | PrefixExpression} Expression
      * 
      * @param {number} prevPrecedence - The previous called precedence level
      *
      * @returns {Expression} The parsed syntax node representing an expression.
      */
     #expression(prevPrecedence = 0) {
-        /** @type {Expression} */
-        let left = this.#primaryExpression();
+        let left;
+        const prefixPrecedence = SyntaxFacts.getPrefixOperatorPrecedence(this.#current.kind);
+
+        if (prefixPrecedence !== 0 && prefixPrecedence >= prevPrecedence) {
+            const operator = this.#consume(this.#current.kind);
+            const operand = this.#expression(prefixPrecedence);
+            left = new PrefixExpression(operator, operand);
+        } else {
+            left = this.#primaryExpression();
+        };
 
         while (true) {
             const precedence = SyntaxFacts.getInfixOperatorPrecedence(this.#current.kind);
