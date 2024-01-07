@@ -1,4 +1,5 @@
 import {
+    BooleanLiteral,
     InfixExpression,
     NumericLiteral,
     ParenthesizedExpression,
@@ -10,6 +11,7 @@ import {
     SyntaxNode,
 } from '../syntax/factory/index.js';
 import {
+    AnnotatedBooleanLiteral,
     AnnotatedInfixExpression,
     AnnotatedNumericLiteral,
     AnnotatedParenthesizedExpression,
@@ -36,6 +38,7 @@ export class Annotator {
      * @param {SyntaxNode} node
      */
     annotate(node) {
+        if (node instanceof BooleanLiteral) return this.#annotatedBooleanLiteral(node);
         if (node instanceof InfixExpression) return this.#annotatedInfixExpression(node);
         if (node instanceof NumericLiteral) return this.#annotatedNumericLiteral(node);
         if (node instanceof ParenthesizedExpression) return this.#annotatedParenthesizedExpression(node);
@@ -51,6 +54,15 @@ export class Annotator {
      * @returns {string[]} An array of diagnostic messages.
      */
     getDiagnostics() { return this.#diagnostics };
+
+    /**
+     * Annotates a numeric literal.
+     *
+     * @param {BooleanLiteral} node
+     */
+    #annotatedBooleanLiteral(node) {
+        return new AnnotatedBooleanLiteral(node.bool.value);
+    };
 
     /**
      * Annotates a infix expression.
@@ -97,9 +109,7 @@ export class Annotator {
      * @param {NumericLiteral} node
      */
     #annotatedNumericLiteral(node) {
-        const value = node.number.value || 0;
-
-        return new AnnotatedNumericLiteral(value);
+        return new AnnotatedNumericLiteral(node.number.value || 0);
     };
 
     /**

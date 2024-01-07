@@ -1,3 +1,4 @@
+export { AnnotatedBooleanLiteral } from './AnnotatedBooleanLiteral.js';
 export { AnnotatedInfixExpression } from './AnnotatedInfixExpression.js';
 export { AnnotatedNumericLiteral } from './AnnotatedNumericLiteral.js';
 export { AnnotatedParenthesizedExpression } from './AnnotatedParenthesizedExpression.js';

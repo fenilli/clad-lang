@@ -20,6 +20,7 @@ export const AnnotatedKind = {
     PrefixExpression: 'PrefixExpression',
 
     // Literals:
+    BooleanLiteral: 'BooleanLiteral',
     NumericLiteral: 'NumericLiteral',
 
     SourceFile: 'SourceFile',
