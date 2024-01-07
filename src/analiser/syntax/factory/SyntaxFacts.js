@@ -13,7 +13,8 @@ export class SyntaxFacts {
         switch (kind) {
             case SyntaxKind.PlusToken:
             case SyntaxKind.MinusToken:
-                return 3;
+            case SyntaxKind.BangToken:
+                return 5;
 
             default: return 0;
         };
@@ -28,10 +29,16 @@ export class SyntaxFacts {
         switch (kind) {
             case SyntaxKind.AsteriskToken:
             case SyntaxKind.SlashToken:
-                return 2;
+                return 4;
 
             case SyntaxKind.PlusToken:
             case SyntaxKind.MinusToken:
+                return 3;
+
+            case SyntaxKind.DoubleAmpersandToken:
+                return 2;
+
+            case SyntaxKind.DoublePipeToken:
                 return 1;
 
             default: return 0;
