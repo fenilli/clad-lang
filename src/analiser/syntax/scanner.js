@@ -22,6 +22,7 @@ export class Scanner {
         [SyntaxKind.DoubleEqualToken, /^\=\=/],
         [SyntaxKind.DoubleAmpersandToken, /^\&\&/],
         [SyntaxKind.DoublePipeToken, /^\|\|/],
+        [SyntaxKind.EqualsToken, /^\=/],
         [SyntaxKind.PlusToken, /^\+/],
         [SyntaxKind.MinusToken, /^\-/],
         [SyntaxKind.AsteriskToken, /^\*/],
@@ -32,6 +33,7 @@ export class Scanner {
 
         // Literals:
         [SyntaxKind.NumberToken, /^\d+/, Number],
+        [SyntaxKind.IdentifierToken, /^[#_a-zA-Z]\w*/],
     ];
 
     /**
