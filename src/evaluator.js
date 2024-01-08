@@ -1,5 +1,7 @@
 import {
+    AnnotatedAssignmentExpression,
     AnnotatedBooleanLiteral,
+    AnnotatedIdentifierExpression,
     AnnotatedInfixExpression,
     AnnotatedNumericLiteral,
     AnnotatedParenthesizedExpression,
@@ -16,6 +18,18 @@ import {
  */
 export class Evaluator {
     /**
+     * @type {Object}
+     */
+    #scope;
+
+    /**
+     * @param {Object} scope 
+     */
+    constructor(scope) {
+        this.#scope = scope;
+    };
+
+    /**
      * Evaluates a syntax tree node.
      *
      * @param {AnnotatedNode} node - The syntax tree node to evaluate.
@@ -25,6 +39,13 @@ export class Evaluator {
      * @throws {Error} Throws an error for unexpected node types or operators.
      */
     evaluate(node) {
+        if (node instanceof AnnotatedAssignmentExpression) {
+            const expression = this.evaluate(node.expression);
+            this.#scope[node.identifier] = expression;
+            return expression;
+        };
+        if (node instanceof AnnotatedBooleanLiteral) return node.value;
+        if (node instanceof AnnotatedIdentifierExpression) return this.#scope[node.identifier];
         if (node instanceof AnnotatedInfixExpression) {
             const left = this.evaluate(node.left);
             const right = this.evaluate(node.right);
@@ -41,7 +62,6 @@ export class Evaluator {
                 default: throw new Error(`Unexpected infix operator <${node.operator}>`);
             };
         };
-        if (node instanceof AnnotatedBooleanLiteral) return node.value;
         if (node instanceof AnnotatedNumericLiteral) return node.value;
         if (node instanceof AnnotatedParenthesizedExpression) return this.evaluate(node.expression);
         if (node instanceof AnnotatedPrefixExpression) {

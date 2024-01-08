@@ -12,12 +12,13 @@ export class Compiler {
      * along with any diagnostic messages.
      *
      * @param {string} input - The source code to be compiled.
+     * @param {Object} scope - The source code to be compiled.
      * @returns {{ ast: any, result: any, diagnostics: Diagnostic[] }} An object containing the AST and an array of diagnostic messages.
      */
-    evaluate(input) {
+    evaluate(input, scope = {}) {
         const parser = new Parser(input);
-        const annotator = new Annotator();
-        const evaluator = new Evaluator();
+        const annotator = new Annotator(scope);
+        const evaluator = new Evaluator(scope);
         const ast = parser.parse();
         const aast = annotator.annotate(ast);
 
