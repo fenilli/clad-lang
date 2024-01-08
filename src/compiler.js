@@ -1,4 +1,5 @@
 import { Annotator } from "./analiser/annotator/index.js";
+import { Diagnostic } from "./analiser/diagnostic.js";
 import { Parser } from "./analiser/syntax/parser.js";
 import { Evaluator } from "./evaluator.js";
 
@@ -11,7 +12,7 @@ export class Compiler {
      * along with any diagnostic messages.
      *
      * @param {string} input - The source code to be compiled.
-     * @returns {{ ast: any, result: any, diagnostics: string[] }} An object containing the AST and an array of diagnostic messages.
+     * @returns {{ ast: any, result: any, diagnostics: Diagnostic[] }} An object containing the AST and an array of diagnostic messages.
      */
     evaluate(input) {
         const parser = new Parser(input);
@@ -21,7 +22,7 @@ export class Compiler {
         const aast = annotator.annotate(ast);
 
         const result = evaluator.evaluate(aast);
-        const diagnostics = parser.getDiagnostics().concat(annotator.getDiagnostics());
+        const diagnostics = parser.getDiagnostics().concat(annotator.getDiagnostics()).toArray();
 
         return { ast, result, diagnostics };
     };

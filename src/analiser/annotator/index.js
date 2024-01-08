@@ -21,6 +21,7 @@ import {
 } from './nodes/index.js';
 import { AnnotatedKind } from './factory/AnnotatedKind.js';
 import { AnnotatedNode } from './factory/AnnotatedNode.js';
+import { DiagnosticBag } from '../diagnostic.js';
 
 /**
  * Represents am Annotator class for annotating the types to a annotated syntax tree.
@@ -29,9 +30,9 @@ export class Annotator {
     /**
      * Array to store diagnostic messages.
      * 
-     * @type {string[]}
+     * @type {DiagnosticBag}
      */
-    #diagnostics = [];
+    #diagnostics = new DiagnosticBag();
 
     /**
      * Annotates the AST.
@@ -52,7 +53,7 @@ export class Annotator {
     /**
      * Retrieves the diagnostics generated during parsing and scanning.
      * 
-     * @returns {string[]} An array of diagnostic messages.
+     * @returns {DiagnosticBag} An array of diagnostic messages.
      */
     getDiagnostics() { return this.#diagnostics };
 
@@ -125,7 +126,7 @@ export class Annotator {
         };
 
         if (typeof operator === 'undefined') {
-            this.#diagnostics.push(`Infix operator <${node.operator.text}> is not defined for types <${left.type}> and <${right.type}>.`);
+            this.#diagnostics.reportUndefinedInfixOperator(node.operator, left, right);
             return left;
         };
 
@@ -185,7 +186,7 @@ export class Annotator {
         };
 
         if (typeof operator === 'undefined') {
-            this.#diagnostics.push(`Prefix operator <${node.operator.text}> is not defined for type <${operand.type}>.`);
+            this.#diagnostics.reportUndefinedPrefixOperator(node.operator, operand);
             return operand;
         };
 

@@ -83,11 +83,21 @@ export class REPL {
             if (diagnostics.length === 0) {
                 this.#write(`${result}\n`);
             } else {
-                this.#write('\x1b[31m');
-                for (const error of diagnostics) {
-                    this.#write(`${error}\n`);
+                for (const diagnostic of diagnostics) {
+                    this.#write('\n\x1b[31m');
+                    this.#write(`${diagnostic.message}\n`);
+                    this.#write('\x1b[0m');
+
+                    const prefix = input.slice(0, diagnostic.span.start);
+                    const error = input.slice(diagnostic.span.start, diagnostic.span.end);
+                    const suffix = input.slice(diagnostic.span.end);
+
+                    this.#write(`    └── ${prefix}`);
+                    this.#write('\x1b[31m');
+                    this.#write(`${error}`);
+                    this.#write('\x1b[0m');
+                    this.#write(`${suffix}\n`);
                 };
-                this.#write('\x1b[0m');
             };
 
             this.#cli.prompt();

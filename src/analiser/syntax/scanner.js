@@ -1,4 +1,5 @@
 import { SyntaxKind, SyntaxToken } from './factory/index.js';
+import { DiagnosticBag } from '../diagnostic.js';
 
 /**
  * Class representing a scanner for lexical analysis.
@@ -36,9 +37,9 @@ export class Scanner {
     /**
      * Array to store diagnostic messages.
      * 
-     * @type {string[]}
+     * @type {DiagnosticBag}
      */
-    #diagnostics = [];
+    #diagnostics = new DiagnosticBag();
 
     /**
      * The input string to be scanned.
@@ -66,7 +67,7 @@ export class Scanner {
     /**
      * Retrieves the diagnostics generated during scanning.
      * 
-     * @returns {string[]} An array of diagnostic messages.
+     * @returns {DiagnosticBag} An array of diagnostic messages.
      */
     getDiagnostics() { return this.#diagnostics };
 
@@ -89,7 +90,7 @@ export class Scanner {
             return new SyntaxToken(kind, start, found, formatter?.(found));
         };
 
-        this.#diagnostics.push(`ScannerError: unexpected token found "${slice.slice(0, 1)}"`);
+        this.#diagnostics.reportInvalidToken(slice.slice(0, 1), this.#cursor);
         return new SyntaxToken(SyntaxKind.UnexpectedToken, this.#cursor++, slice.slice(0, 1));
     };
 };

@@ -12,6 +12,7 @@ import {
     SyntaxToken,
 } from './factory/index.js';
 import { Scanner } from "./scanner.js";
+import { DiagnosticBag } from '../diagnostic.js';
 
 /**
  * Represents a Parser class for parsing tokens and generating a syntax tree.
@@ -20,9 +21,9 @@ export class Parser {
     /**
      * Array to store diagnostic messages.
      * 
-     * @type {string[]}
+     * @type {DiagnosticBag}
      */
-    #diagnostics = [];
+    #diagnostics = new DiagnosticBag();
 
     /**
      * Array to store scanned tokens.
@@ -60,7 +61,7 @@ export class Parser {
     /**
      * Retrieves the diagnostics generated during parsing and scanning.
      * 
-     * @returns {string[]} An array of diagnostic messages.
+     * @returns {DiagnosticBag} An array of diagnostic messages.
      */
     getDiagnostics() { return this.#diagnostics };
 
@@ -83,7 +84,7 @@ export class Parser {
     #consume(kind) {
         if (this.#current.kind === kind) return this.#tokens[this.#cursor++];
 
-        this.#diagnostics.push(`SyntaxError: unexpected token <${this.#current.kind}>, expected <${kind}>`);
+        this.#diagnostics.reportUnexpectedToken(this.#current, kind);
         return new SyntaxToken(kind, this.#current.pos);
     };
 
