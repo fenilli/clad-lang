@@ -64,6 +64,7 @@ export class REPL {
      */
     run() {
         let debug = true;
+        const scope = {};
 
         this.#cli.on('line', (input) => {
             if (input === '#clear') return this.#write('\u001Bc');
@@ -76,7 +77,7 @@ export class REPL {
             };
 
             const { evaluate } = new Compiler();
-            const { ast, result, diagnostics } = evaluate(input);
+            const { ast, result, diagnostics } = evaluate(input, scope);
 
             if (debug) this.#printTree(ast);
 
