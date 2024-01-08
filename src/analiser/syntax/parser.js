@@ -1,5 +1,7 @@
 import {
+    AssignmentExpression,
     BooleanLiteral,
+    IdentifierExpression,
     InfixExpression,
     NumericLiteral,
     ParenthesizedExpression,
@@ -61,7 +63,7 @@ export class Parser {
     /**
      * Retrieves the diagnostics generated during parsing and scanning.
      * 
-     * @returns {DiagnosticBag} An array of diagnostic messages.
+     * @returns {DiagnosticBag} - An array of diagnostic messages.
      */
     getDiagnostics() { return this.#diagnostics };
 
@@ -71,7 +73,21 @@ export class Parser {
      * @type {SyntaxToken}
      */
     get #current() {
-        return this.#tokens[this.#cursor];
+        return this.#peek(0);
+    };
+
+    /**
+     * Peek at the offset token.
+     * 
+     * @param {number} offset - The number to peek ahead at the tokens.
+     * 
+     * @returns {SyntaxToken}
+     */
+    #peek(offset) {
+        const i = this.#cursor + offset ?? 0;
+        if (this.#cursor > this.#tokens.length) return this.#tokens[this.#tokens.length - 1];
+
+        return this.#tokens[i];
     };
 
     /**
@@ -110,21 +126,47 @@ export class Parser {
     };
 
     /**
-     * Parses an expression, delegating to the primaryExpression rule.
+     * Parses an expression.
      * 
      * @typedef {PrimaryExpression | InfixExpression | PrefixExpression} Expression
+     * 
+     * @returns {Expression} The parsed syntax node representing an expression.
+     */
+    #expression() {
+        return this.#assignmentExpression();
+    };
+
+    /**
+     * Parses an assignment expression.
+     * 
+     * @returns {Expression} The parsed syntax node representing an expression.
+     */
+    #assignmentExpression() {
+        if (this.#peek(0).kind === SyntaxKind.IdentifierToken && this.#peek(1).kind === SyntaxKind.EqualsToken) {
+            const identifier = this.#consume(SyntaxKind.IdentifierToken);
+            const operator = this.#consume(SyntaxKind.EqualsToken);
+            const expression = this.#assignmentExpression();
+
+            return new AssignmentExpression(identifier, operator, expression);
+        };
+
+        return this.#operatorPrecedenceExpression();
+    };
+
+    /**
+     * Parses an operator precedence expression, delegating to the primaryExpression rule.
      * 
      * @param {number} prevPrecedence - The previous called precedence level
      *
      * @returns {Expression} The parsed syntax node representing an expression.
      */
-    #expression(prevPrecedence = 0) {
+    #operatorPrecedenceExpression(prevPrecedence = 0) {
         let left;
         const prefixPrecedence = SyntaxFacts.getPrefixOperatorPrecedence(this.#current.kind);
 
         if (prefixPrecedence !== 0 && prefixPrecedence >= prevPrecedence) {
             const operator = this.#consume(this.#current.kind);
-            const operand = this.#expression(prefixPrecedence);
+            const operand = this.#operatorPrecedenceExpression(prefixPrecedence);
             left = new PrefixExpression(operator, operand);
         } else {
             left = this.#primaryExpression();
@@ -136,7 +178,7 @@ export class Parser {
             if (precedence === 0 || precedence <= prevPrecedence) break;
 
             const operator = this.#consume(this.#current.kind);
-            const right = this.#expression(precedence);
+            const right = this.#operatorPrecedenceExpression(precedence);
             left = new InfixExpression(left, operator, right);
         };
 
@@ -146,7 +188,7 @@ export class Parser {
     /**
      * Parses a primary expression based on the current token kind.
      * 
-     * @typedef {NumericLiteral | BooleanLiteral | ParenthesizedExpression} PrimaryExpression
+     * @typedef {NumericLiteral | BooleanLiteral | IdentifierExpression | ParenthesizedExpression} PrimaryExpression
      *
      * @returns {PrimaryExpression} The parsed syntax node representing a primary expression.
      */
@@ -155,6 +197,8 @@ export class Parser {
             case SyntaxKind.TrueKeyword:
             case SyntaxKind.FalseKeyword:
                 return this.#booleanLiteral(this.#current.kind);
+            case SyntaxKind.IdentifierToken:
+                return this.#identifierExpression();
             case SyntaxKind.OpenParenToken: return this.#parenthesizedExpression();
             default: return this.#numericLiteral();
         };
@@ -171,6 +215,15 @@ export class Parser {
         this.#consume(SyntaxKind.CloseParenToken);
 
         return new ParenthesizedExpression(expression);
+    };
+
+    /**
+    * Creates a IdentifierExpression instance by consuming an IdentifierToken.
+    *
+    * @returns {IdentifierExpression} A NumericLiteral instance.
+    */
+    #identifierExpression() {
+        return new IdentifierExpression(this.#consume(SyntaxKind.IdentifierToken));
     };
 
     /**
