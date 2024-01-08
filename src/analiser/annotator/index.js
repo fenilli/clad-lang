@@ -1,5 +1,7 @@
 import {
+    AssignmentExpression,
     BooleanLiteral,
+    IdentifierExpression,
     InfixExpression,
     NumericLiteral,
     ParenthesizedExpression,
@@ -11,7 +13,9 @@ import {
     SyntaxNode,
 } from '../syntax/factory/index.js';
 import {
+    AnnotatedAssignmentExpression,
     AnnotatedBooleanLiteral,
+    AnnotatedIdentifierExpression,
     AnnotatedInfixExpression,
     AnnotatedNumericLiteral,
     AnnotatedOperator,
@@ -35,12 +39,26 @@ export class Annotator {
     #diagnostics = new DiagnosticBag();
 
     /**
+     * @type {Object}
+     */
+    #scope;
+
+    /**
+     * @param {Object} scope 
+     */
+    constructor(scope) {
+        this.#scope = scope;
+    };
+
+    /**
      * Annotates the AST.
      *
      * @param {SyntaxNode} node
      */
     annotate(node) {
+        if (node instanceof AssignmentExpression) return this.#annotatedAssignmentExpression(node);
         if (node instanceof BooleanLiteral) return this.#annotatedBooleanLiteral(node);
+        if (node instanceof IdentifierExpression) return this.#annotatedIdentifierExpression(node);
         if (node instanceof InfixExpression) return this.#annotatedInfixExpression(node);
         if (node instanceof NumericLiteral) return this.#annotatedNumericLiteral(node);
         if (node instanceof ParenthesizedExpression) return this.#annotatedParenthesizedExpression(node);
@@ -58,12 +76,38 @@ export class Annotator {
     getDiagnostics() { return this.#diagnostics };
 
     /**
+     * Annotates a assignment expression.
+     *
+     * @param {AssignmentExpression} node
+     */
+    #annotatedAssignmentExpression(node) {
+        /** @type {AnnotatedNode} */
+        const expression = this.annotate(node.expression);
+
+        return new AnnotatedAssignmentExpression(node.identifier.text || '', expression);
+    };
+
+    /**
      * Annotates a numeric literal.
      *
      * @param {BooleanLiteral} node
      */
     #annotatedBooleanLiteral(node) {
         return new AnnotatedBooleanLiteral(node.bool.value);
+    };
+
+    /**
+     * Annotates a identifier expression.
+     *
+     * @param {IdentifierExpression} node
+     */
+    #annotatedIdentifierExpression(node) {
+        if (!node.identifier.text || !(node.identifier.text in this.#scope)) {
+            this.#diagnostics.reportUndefinedIdentifier(node.identifier);
+            return new AnnotatedNumericLiteral(0);
+        };
+
+        return new AnnotatedIdentifierExpression(node.identifier.text, typeof this.#scope[node.identifier.text]);
     };
 
     /**

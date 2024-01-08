@@ -1,4 +1,6 @@
+export { AnnotatedAssignmentExpression } from './AnnotatedAssignmentExpression.js';
 export { AnnotatedBooleanLiteral } from './AnnotatedBooleanLiteral.js';
+export { AnnotatedIdentifierExpression } from './AnnotatedIdentifierExpression.js';
 export { AnnotatedInfixExpression } from './AnnotatedInfixExpression.js';
 export { AnnotatedNumericLiteral } from './AnnotatedNumericLiteral.js';
 export { AnnotatedOperator } from './AnnotatedOperator.js';

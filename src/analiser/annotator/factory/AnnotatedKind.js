@@ -20,6 +20,8 @@ export const AnnotatedKind = {
     NotEquals: 'NotEquals',
 
     // Expressions:
+    AssignmentExpression: 'AssignmentExpression',
+    IdentifierExpression: 'IdentifierExpression',
     InfixExpression: 'InfixExpression',
     ParenthesizedExpression: 'ParenthesizedExpression',
     PrefixExpression: 'PrefixExpression',

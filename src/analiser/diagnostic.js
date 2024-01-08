@@ -115,4 +115,15 @@ export class DiagnosticBag {
         const span = { start: operator.pos, end: operator.pos + (operator.text?.length || 1) };
         this.#report(message, span);
     };
+
+    /**
+     * Adds a report on undefined identifier for a expression.
+     * 
+     * @param {SyntaxToken} identifier - The identifier used in the expression.
+     */
+    reportUndefinedIdentifier(identifier) {
+        const message = `Identifier <${identifier.text}> is not defined.`;
+        const span = { start: identifier.pos, end: identifier.pos + (identifier.text?.length || 1) };
+        this.#report(message, span);
+    };
 };
