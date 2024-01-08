@@ -4,9 +4,7 @@ import {
     SyntaxNode,
     SyntaxToken,
 } from './analiser/syntax/factory/index.js';
-import { Parser } from './analiser/syntax/parser.js';
-import { Annotator } from './analiser/annotator/index.js';
-import { Evaluator } from './evaluator.js';
+import { Compiler } from './compiler.js';
 
 /**
  * Represents a Read-Eval-Print Loop (REPL) class for interactive input and output.
@@ -66,7 +64,6 @@ export class REPL {
      */
     run() {
         let debug = true;
-        const evaluator = new Evaluator();
 
         this.#cli.on('line', (input) => {
             if (input === '#clear') return this.#write('\u001Bc');
@@ -78,20 +75,16 @@ export class REPL {
                 return this.#cli.prompt();
             };
 
-            const parser = new Parser(input);
-            const ast = parser.parse();
+            const { evaluate } = new Compiler();
+            const { ast, result, diagnostics } = evaluate(input);
 
-            const annotator = new Annotator();
-            const annotatedAst = annotator.annotate(ast);
-
-            const errors = parser.getDiagnostics().concat(annotator.getDiagnostics());
             if (debug) this.#printTree(ast);
 
-            if (errors.length === 0) {
-                this.#write(`${evaluator.evaluate(annotatedAst)}\n`);
+            if (diagnostics.length === 0) {
+                this.#write(`${result}\n`);
             } else {
                 this.#write('\x1b[31m');
-                for (const error of errors) {
+                for (const error of diagnostics) {
                     this.#write(`${error}\n`);
                 };
                 this.#write('\x1b[0m');
