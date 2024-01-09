@@ -14,8 +14,8 @@ export class Scanner {
         [SyntaxKind.WhitespaceToken, /^\s+/],
 
         // Keywords:
-        [SyntaxKind.FalseKeyword, /^false/, () => false],
-        [SyntaxKind.TrueKeyword, /^true/, () => true],
+        [SyntaxKind.FalseKeyword, /^\bfalse\b/, () => false],
+        [SyntaxKind.TrueKeyword, /^\btrue\b/, () => true],
 
         // Symbols:
         [SyntaxKind.BangEqualToken, /^\!\=/],
