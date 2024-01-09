@@ -62,9 +62,8 @@ const createASTAssertions = (ast) => {
      * @param {SyntaxKind} kind
      */
     const assertNode = (kind) => {
-        assert(typeof current !== 'boolean');
-        assert(!(current instanceof SyntaxToken));
         assert.equal(kind, current.kind);
+        assert(!(current instanceof SyntaxToken));
         current = next();
     };
 
@@ -75,9 +74,8 @@ const createASTAssertions = (ast) => {
      * @param {string | undefined} text
      */
     const assertToken = (kind, text) => {
-        assert(typeof current !== 'boolean');
-        assert(current instanceof SyntaxToken);
         assert.equal(kind, current.kind);
+        assert(current instanceof SyntaxToken);
         assert.equal(text, current.text);
         current = next();
     };
