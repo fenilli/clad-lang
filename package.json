@@ -5,5 +5,11 @@
   "version": "0.1.0",
   "description": "Clad, it's tailored wear for programming. Derived from clothe it wraps your creativity in a stylish embrace.",
   "author": "Gustavo Fenilli <gustavofenilli@gmail.com> (https://github.com/fenilli)",
-  "license": "MIT"
+  "license": "MIT",
+  "imports": {
+    "#src/*": "./src/*"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
 }
