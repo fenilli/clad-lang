@@ -10,6 +10,12 @@ import {
 } from '../../../src/analiser/syntax/factory/index.js';
 import { SourceFile } from '../../../src/analiser/syntax/nodes/index.js';
 
+const prefixOperators = [
+    [SyntaxKind.BangToken, '!'],
+    [SyntaxKind.PlusToken, '+'],
+    [SyntaxKind.MinusToken, '-'],
+];
+
 const infixOperators = [
     [SyntaxKind.DoubleAmpersandToken, '&&'],
     [SyntaxKind.DoublePipeToken, '||'],
@@ -89,6 +95,47 @@ const createASTAssertions = (ast) => {
 };
 
 describe('Parser', () => {
+    it('parses prefix expressions', () => {
+        for (const [kind, operator] of prefixOperators) {
+            const ast = new Parser(`${operator}a`).parse();
+            const { assertNode, assertToken } = createASTAssertions(ast);
+
+            assertNode(SyntaxKind.PrefixExpression);
+            assertToken(kind, operator);
+            assertNode(SyntaxKind.IdentifierExpression);
+            assertToken(SyntaxKind.IdentifierToken, 'a');
+        };
+    });
+
+    it('parses prefix and infix expressions with the correct operator precedence', () => {
+        for (const [kindP, operatorP] of prefixOperators) {
+            for (const [kindI, operatorI] of infixOperators) {
+                const ast = new Parser(`${operatorP}a ${operatorI} b`).parse();
+                const { assertNode, assertToken } = createASTAssertions(ast);
+
+                if (SyntaxFacts.getPrefixOperatorPrecedence(kindP) >= SyntaxFacts.getInfixOperatorPrecedence(kindI)) {
+                    assertNode(SyntaxKind.InfixExpression);
+                    assertNode(SyntaxKind.PrefixExpression);
+                    assertToken(kindP, operatorP);
+                    assertNode(SyntaxKind.IdentifierExpression);
+                    assertToken(SyntaxKind.IdentifierToken, 'a');
+                    assertToken(kindI, operatorI);
+                    assertNode(SyntaxKind.IdentifierExpression);
+                    assertToken(SyntaxKind.IdentifierToken, 'b');
+                } else {
+                    assertNode(SyntaxKind.PrefixExpression);
+                    assertToken(kindP, operatorP);
+                    assertNode(SyntaxKind.InfixExpression);
+                    assertNode(SyntaxKind.IdentifierExpression);
+                    assertToken(SyntaxKind.IdentifierToken, 'a');
+                    assertToken(kindI, operatorI);
+                    assertNode(SyntaxKind.IdentifierExpression);
+                    assertToken(SyntaxKind.IdentifierToken, 'b');
+                };
+            };
+        };
+    });
+
     it('parses infix expressions with correct operator precedence', () => {
         for (const [kindL, operatorL] of infixOperators) {
             for (const [kindR, operatorR] of infixOperators) {
