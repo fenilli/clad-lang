@@ -93,47 +93,56 @@ const createASTAssertions = (ast) => {
 };
 
 describe('Parser', () => {
-    describe('Primary Expressions', () => {
-        it('parses a numeric literal', () => {
-            const ast = new Parser('1').parse();
+    it('parses a numeric literal', () => {
+        const ast = new Parser('1').parse();
+        const { assertNode, assertTokenValue } = createASTAssertions(ast);
+
+        assertNode(SyntaxKind.NumericLiteral);
+        assertTokenValue(SyntaxKind.NumberToken, 1);
+    });
+
+    it('parses a boolean literal', () => {
+        /** @type {[string, boolean][]} */
+        const booleanTests = [
+            [SyntaxKind.TrueKeyword, true],
+            [SyntaxKind.FalseKeyword, false],
+        ];
+
+        for (const [kind, input] of booleanTests) {
+            const ast = new Parser(`${input}`).parse();
             const { assertNode, assertTokenValue } = createASTAssertions(ast);
 
-            assertNode(SyntaxKind.NumericLiteral);
-            assertTokenValue(SyntaxKind.NumberToken, 1);
-        });
+            assertNode(SyntaxKind.BooleanLiteral);
+            assertTokenValue(kind, input);
+        };
+    });
 
-        it('parses a boolean literal', () => {
-            /** @type {[string, boolean][]} */
-            const booleanTests = [
-                [SyntaxKind.TrueKeyword, true],
-                [SyntaxKind.FalseKeyword, false],
-            ];
+    it('parses a identifier expression', () => {
+        const ast = new Parser('x').parse();
+        const { assertNode, assertTokenText } = createASTAssertions(ast);
 
-            for (const [kind, input] of booleanTests) {
-                const ast = new Parser(`${input}`).parse();
-                const { assertNode, assertTokenValue } = createASTAssertions(ast);
+        assertNode(SyntaxKind.IdentifierExpression);
+        assertTokenText(SyntaxKind.IdentifierToken, 'x');
+    });
 
-                assertNode(SyntaxKind.BooleanLiteral);
-                assertTokenValue(kind, input);
-            };
-        });
+    it('parses a parenthesized expression', () => {
+        const ast = new Parser('(1)').parse();
+        const { assertNode, assertTokenValue } = createASTAssertions(ast);
 
-        it('parses a identifier expression', () => {
-            const ast = new Parser('x').parse();
-            const { assertNode, assertTokenText } = createASTAssertions(ast);
+        assertNode(SyntaxKind.ParenthesizedExpression);
+        assertNode(SyntaxKind.NumericLiteral);
+        assertTokenValue(SyntaxKind.NumberToken, 1);
+    });
 
-            assertNode(SyntaxKind.IdentifierExpression);
-            assertTokenText(SyntaxKind.IdentifierToken, 'x');
-        });
+    it('parses assignment expressions', () => {
+        const ast = new Parser(`a = 10`).parse();
+        const { assertNode, assertTokenText, assertTokenValue } = createASTAssertions(ast);
 
-        it('parses a parenthesized expression', () => {
-            const ast = new Parser('(1)').parse();
-            const { assertNode, assertTokenValue } = createASTAssertions(ast);
-
-            assertNode(SyntaxKind.ParenthesizedExpression);
-            assertNode(SyntaxKind.NumericLiteral);
-            assertTokenValue(SyntaxKind.NumberToken, 1);
-        });
+        assertNode(SyntaxKind.AssignmentExpression);
+        assertTokenText(SyntaxKind.IdentifierToken, 'a');
+        assertTokenText(SyntaxKind.EqualsToken, '=');
+        assertNode(SyntaxKind.NumericLiteral);
+        assertTokenValue(SyntaxKind.NumberToken, 10);
     });
 
     describe('Expressions with Operators', () => {
