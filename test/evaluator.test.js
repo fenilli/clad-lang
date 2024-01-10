@@ -83,4 +83,12 @@ describe('Evaluator', () => {
             assert.equal(result, expected);
         };
     });
+
+    it('evaluates assignement expressions', () => {
+        const { evaluate } = new Compiler();
+        const { result, diagnostics } = evaluate('x = 42', {});
+
+        assert.deepEqual(diagnostics, []);
+        assert.equal(result, 42);
+    });
 });
