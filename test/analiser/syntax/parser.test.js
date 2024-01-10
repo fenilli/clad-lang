@@ -10,22 +10,6 @@ import {
 } from '../../../src/analiser/syntax/factory/index.js';
 import { SourceFile } from '../../../src/analiser/syntax/nodes/index.js';
 
-const prefixOperators = [
-    [SyntaxKind.BangToken, '!'],
-    [SyntaxKind.PlusToken, '+'],
-    [SyntaxKind.MinusToken, '-'],
-];
-
-const infixOperators = [
-    [SyntaxKind.DoubleAmpersandToken, '&&'],
-    [SyntaxKind.DoublePipeToken, '||'],
-    [SyntaxKind.DoubleEqualToken, '=='],
-    [SyntaxKind.PlusToken, '+'],
-    [SyntaxKind.MinusToken, '-'],
-    [SyntaxKind.AsteriskToken, '*'],
-    [SyntaxKind.SlashToken, '/'],
-];
-
 /**
  * Creates an assertion method for asserting AST nodes.
  * 
@@ -74,15 +58,28 @@ const createASTAssertions = (ast) => {
     };
 
     /**
-     * Asserts a token and moves the cursor ahead one.
+     * Asserts a token with text and moves the cursor ahead one.
      * 
      * @param {SyntaxKind} kind
      * @param {string | undefined} text
      */
-    const assertToken = (kind, text) => {
+    const assertTokenText = (kind, text) => {
         assert.equal(kind, current.kind);
         assert(current instanceof SyntaxToken);
         assert.equal(text, current.text);
+        current = next();
+    };
+
+    /**
+     * Asserts a token and moves the cursor ahead one.
+     * 
+     * @param {SyntaxKind} kind
+     * @param {any | undefined} value
+     */
+    const assertTokenValue = (kind, value) => {
+        assert.equal(kind, current.kind);
+        assert(current instanceof SyntaxToken);
+        assert.equal(value, current.value);
         current = next();
     };
 
@@ -90,82 +87,144 @@ const createASTAssertions = (ast) => {
 
     return {
         assertNode,
-        assertToken,
+        assertTokenText,
+        assertTokenValue,
     };
 };
 
 describe('Parser', () => {
-    it('parses prefix expressions', () => {
-        for (const [kind, operator] of prefixOperators) {
-            const ast = new Parser(`${operator}a`).parse();
-            const { assertNode, assertToken } = createASTAssertions(ast);
+    describe('Primary Expressions', () => {
+        it('parses a numeric literal', () => {
+            const ast = new Parser('1').parse();
+            const { assertNode, assertTokenValue } = createASTAssertions(ast);
 
-            assertNode(SyntaxKind.PrefixExpression);
-            assertToken(kind, operator);
+            assertNode(SyntaxKind.NumericLiteral);
+            assertTokenValue(SyntaxKind.NumberToken, 1);
+        });
+
+        it('parses a boolean literal', () => {
+            /** @type {[string, boolean][]} */
+            const booleanTests = [
+                [SyntaxKind.TrueKeyword, true],
+                [SyntaxKind.FalseKeyword, false],
+            ];
+
+            for (const [kind, input] of booleanTests) {
+                const ast = new Parser(`${input}`).parse();
+                const { assertNode, assertTokenValue } = createASTAssertions(ast);
+
+                assertNode(SyntaxKind.BooleanLiteral);
+                assertTokenValue(kind, input);
+            };
+        });
+
+        it('parses a identifier expression', () => {
+            const ast = new Parser('x').parse();
+            const { assertNode, assertTokenText } = createASTAssertions(ast);
+
             assertNode(SyntaxKind.IdentifierExpression);
-            assertToken(SyntaxKind.IdentifierToken, 'a');
-        };
+            assertTokenText(SyntaxKind.IdentifierToken, 'x');
+        });
+
+        it('parses a parenthesized expression', () => {
+            const ast = new Parser('(1)').parse();
+            const { assertNode, assertTokenValue } = createASTAssertions(ast);
+
+            assertNode(SyntaxKind.ParenthesizedExpression);
+            assertNode(SyntaxKind.NumericLiteral);
+            assertTokenValue(SyntaxKind.NumberToken, 1);
+        });
     });
 
-    it('parses prefix and infix expressions with the correct operator precedence', () => {
-        for (const [kindP, operatorP] of prefixOperators) {
-            for (const [kindI, operatorI] of infixOperators) {
-                const ast = new Parser(`${operatorP}a ${operatorI} b`).parse();
-                const { assertNode, assertToken } = createASTAssertions(ast);
+    describe('Expressions with Operators', () => {
+        const prefixOperators = [
+            [SyntaxKind.BangToken, '!'],
+            [SyntaxKind.PlusToken, '+'],
+            [SyntaxKind.MinusToken, '-'],
+        ];
 
-                if (SyntaxFacts.getPrefixOperatorPrecedence(kindP) >= SyntaxFacts.getInfixOperatorPrecedence(kindI)) {
-                    assertNode(SyntaxKind.InfixExpression);
-                    assertNode(SyntaxKind.PrefixExpression);
-                    assertToken(kindP, operatorP);
-                    assertNode(SyntaxKind.IdentifierExpression);
-                    assertToken(SyntaxKind.IdentifierToken, 'a');
-                    assertToken(kindI, operatorI);
-                    assertNode(SyntaxKind.IdentifierExpression);
-                    assertToken(SyntaxKind.IdentifierToken, 'b');
-                } else {
-                    assertNode(SyntaxKind.PrefixExpression);
-                    assertToken(kindP, operatorP);
-                    assertNode(SyntaxKind.InfixExpression);
-                    assertNode(SyntaxKind.IdentifierExpression);
-                    assertToken(SyntaxKind.IdentifierToken, 'a');
-                    assertToken(kindI, operatorI);
-                    assertNode(SyntaxKind.IdentifierExpression);
-                    assertToken(SyntaxKind.IdentifierToken, 'b');
+        const infixOperators = [
+            [SyntaxKind.DoubleAmpersandToken, '&&'],
+            [SyntaxKind.DoublePipeToken, '||'],
+            [SyntaxKind.DoubleEqualToken, '=='],
+            [SyntaxKind.PlusToken, '+'],
+            [SyntaxKind.MinusToken, '-'],
+            [SyntaxKind.AsteriskToken, '*'],
+            [SyntaxKind.SlashToken, '/'],
+        ];
+
+        it('parses prefix expressions', () => {
+            for (const [kind, operator] of prefixOperators) {
+                const ast = new Parser(`${operator}a`).parse();
+                const { assertNode, assertTokenText } = createASTAssertions(ast);
+
+                assertNode(SyntaxKind.PrefixExpression);
+                assertTokenText(kind, operator);
+                assertNode(SyntaxKind.IdentifierExpression);
+                assertTokenText(SyntaxKind.IdentifierToken, 'a');
+            };
+        });
+
+        it('parses prefix and infix expressions with the correct operator precedence', () => {
+            for (const [kindP, operatorP] of prefixOperators) {
+                for (const [kindI, operatorI] of infixOperators) {
+                    const ast = new Parser(`${operatorP}a ${operatorI} b`).parse();
+                    const { assertNode, assertTokenText } = createASTAssertions(ast);
+
+                    if (SyntaxFacts.getPrefixOperatorPrecedence(kindP) >= SyntaxFacts.getInfixOperatorPrecedence(kindI)) {
+                        assertNode(SyntaxKind.InfixExpression);
+                        assertNode(SyntaxKind.PrefixExpression);
+                        assertTokenText(kindP, operatorP);
+                        assertNode(SyntaxKind.IdentifierExpression);
+                        assertTokenText(SyntaxKind.IdentifierToken, 'a');
+                        assertTokenText(kindI, operatorI);
+                        assertNode(SyntaxKind.IdentifierExpression);
+                        assertTokenText(SyntaxKind.IdentifierToken, 'b');
+                    } else {
+                        assertNode(SyntaxKind.PrefixExpression);
+                        assertTokenText(kindP, operatorP);
+                        assertNode(SyntaxKind.InfixExpression);
+                        assertNode(SyntaxKind.IdentifierExpression);
+                        assertTokenText(SyntaxKind.IdentifierToken, 'a');
+                        assertTokenText(kindI, operatorI);
+                        assertNode(SyntaxKind.IdentifierExpression);
+                        assertTokenText(SyntaxKind.IdentifierToken, 'b');
+                    };
                 };
             };
-        };
-    });
+        });
 
-    it('parses infix expressions with correct operator precedence', () => {
-        for (const [kindL, operatorL] of infixOperators) {
-            for (const [kindR, operatorR] of infixOperators) {
-                const ast = new Parser(`a ${operatorL} b ${operatorR} c`).parse();
-                const { assertNode, assertToken } = createASTAssertions(ast);
+        it('parses infix expressions with correct operator precedence', () => {
+            for (const [kindL, operatorL] of infixOperators) {
+                for (const [kindR, operatorR] of infixOperators) {
+                    const ast = new Parser(`a ${operatorL} b ${operatorR} c`).parse();
+                    const { assertNode, assertTokenText } = createASTAssertions(ast);
 
-                if (SyntaxFacts.getInfixOperatorPrecedence(kindL) >= SyntaxFacts.getInfixOperatorPrecedence(kindR)) {
-                    assertNode(SyntaxKind.InfixExpression);
-                    assertNode(SyntaxKind.InfixExpression);
-                    assertNode(SyntaxKind.IdentifierExpression);
-                    assertToken(SyntaxKind.IdentifierToken, 'a');
-                    assertToken(kindL, operatorL);
-                    assertNode(SyntaxKind.IdentifierExpression);
-                    assertToken(SyntaxKind.IdentifierToken, 'b');
-                    assertToken(kindR, operatorR);
-                    assertNode(SyntaxKind.IdentifierExpression);
-                    assertToken(SyntaxKind.IdentifierToken, 'c');
-                } else {
-                    assertNode(SyntaxKind.InfixExpression);
-                    assertNode(SyntaxKind.IdentifierExpression);
-                    assertToken(SyntaxKind.IdentifierToken, 'a');
-                    assertToken(kindL, operatorL);
-                    assertNode(SyntaxKind.InfixExpression);
-                    assertNode(SyntaxKind.IdentifierExpression);
-                    assertToken(SyntaxKind.IdentifierToken, 'b');
-                    assertToken(kindR, operatorR);
-                    assertNode(SyntaxKind.IdentifierExpression);
-                    assertToken(SyntaxKind.IdentifierToken, 'c');
+                    if (SyntaxFacts.getInfixOperatorPrecedence(kindL) >= SyntaxFacts.getInfixOperatorPrecedence(kindR)) {
+                        assertNode(SyntaxKind.InfixExpression);
+                        assertNode(SyntaxKind.InfixExpression);
+                        assertNode(SyntaxKind.IdentifierExpression);
+                        assertTokenText(SyntaxKind.IdentifierToken, 'a');
+                        assertTokenText(kindL, operatorL);
+                        assertNode(SyntaxKind.IdentifierExpression);
+                        assertTokenText(SyntaxKind.IdentifierToken, 'b');
+                        assertTokenText(kindR, operatorR);
+                        assertNode(SyntaxKind.IdentifierExpression);
+                        assertTokenText(SyntaxKind.IdentifierToken, 'c');
+                    } else {
+                        assertNode(SyntaxKind.InfixExpression);
+                        assertNode(SyntaxKind.IdentifierExpression);
+                        assertTokenText(SyntaxKind.IdentifierToken, 'a');
+                        assertTokenText(kindL, operatorL);
+                        assertNode(SyntaxKind.InfixExpression);
+                        assertNode(SyntaxKind.IdentifierExpression);
+                        assertTokenText(SyntaxKind.IdentifierToken, 'b');
+                        assertTokenText(kindR, operatorR);
+                        assertNode(SyntaxKind.IdentifierExpression);
+                        assertTokenText(SyntaxKind.IdentifierToken, 'c');
+                    };
                 };
-            }
-        }
+            };
+        });
     });
 });
