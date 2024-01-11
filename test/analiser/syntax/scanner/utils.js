@@ -18,8 +18,8 @@ export const tests = [
 
     [SyntaxKind.DoubleAmpersandToken, '&&'],
     [SyntaxKind.DoublePipeToken, '||'],
-    [SyntaxKind.DoubleEqualToken, '=='],
-    [SyntaxKind.BangEqualToken, '!='],
+    [SyntaxKind.DoubleEqualsToken, '=='],
+    [SyntaxKind.BangEqualsToken, '!='],
     [SyntaxKind.EqualsToken, '='],
     [SyntaxKind.PlusToken, '+'],
     [SyntaxKind.MinusToken, '-'],

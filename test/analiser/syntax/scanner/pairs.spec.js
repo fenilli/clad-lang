@@ -25,11 +25,11 @@ export const resultKindSpecialCases = [
     [SyntaxKind.FalseKeyword, SyntaxKind.FalseKeyword, [SyntaxKind.IdentifierToken]],
     [SyntaxKind.FalseKeyword, SyntaxKind.TrueKeyword, [SyntaxKind.IdentifierToken]],
 
-    [SyntaxKind.EqualsToken, SyntaxKind.EqualsToken, [SyntaxKind.DoubleEqualToken]],
-    [SyntaxKind.EqualsToken, SyntaxKind.DoubleEqualToken, [SyntaxKind.DoubleEqualToken, SyntaxKind.EqualsToken]],
+    [SyntaxKind.EqualsToken, SyntaxKind.EqualsToken, [SyntaxKind.DoubleEqualsToken]],
+    [SyntaxKind.EqualsToken, SyntaxKind.DoubleEqualsToken, [SyntaxKind.DoubleEqualsToken, SyntaxKind.EqualsToken]],
 
-    [SyntaxKind.BangToken, SyntaxKind.EqualsToken, [SyntaxKind.BangEqualToken]],
-    [SyntaxKind.BangToken, SyntaxKind.DoubleEqualToken, [SyntaxKind.BangEqualToken, SyntaxKind.EqualsToken]],
+    [SyntaxKind.BangToken, SyntaxKind.EqualsToken, [SyntaxKind.BangEqualsToken]],
+    [SyntaxKind.BangToken, SyntaxKind.DoubleEqualsToken, [SyntaxKind.BangEqualsToken, SyntaxKind.EqualsToken]],
 ];
 
 export default () => {

@@ -12,7 +12,7 @@ export default () => {
     const infixOperators = [
         [SyntaxKind.DoubleAmpersandToken, '&&'],
         [SyntaxKind.DoublePipeToken, '||'],
-        [SyntaxKind.DoubleEqualToken, '=='],
+        [SyntaxKind.DoubleEqualsToken, '=='],
         [SyntaxKind.PlusToken, '+'],
         [SyntaxKind.MinusToken, '-'],
         [SyntaxKind.AsteriskToken, '*'],

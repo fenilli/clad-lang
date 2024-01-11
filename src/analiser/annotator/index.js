@@ -158,11 +158,11 @@ export class Annotator {
 
         if ((left.type === 'boolean' || left.type === 'number') && (right.type === 'boolean' || right.type === 'number')) {
             switch (node.operator.kind) {
-                case SyntaxKind.BangEqualToken: {
+                case SyntaxKind.BangEqualsToken: {
                     operator = new AnnotatedOperator(AnnotatedKind.NotEquals, 'boolean');
                     break;
                 };
-                case SyntaxKind.DoubleEqualToken: {
+                case SyntaxKind.DoubleEqualsToken: {
                     operator = new AnnotatedOperator(AnnotatedKind.Equals, 'boolean');
                     break;
                 };

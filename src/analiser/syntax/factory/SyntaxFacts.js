@@ -35,8 +35,8 @@ export class SyntaxFacts {
             case SyntaxKind.MinusToken:
                 return 4;
 
-            case SyntaxKind.DoubleEqualToken:
-            case SyntaxKind.BangEqualToken:
+            case SyntaxKind.DoubleEqualsToken:
+            case SyntaxKind.BangEqualsToken:
                 return 3;
 
             case SyntaxKind.DoubleAmpersandToken:

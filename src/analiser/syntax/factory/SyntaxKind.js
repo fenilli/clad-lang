@@ -14,8 +14,8 @@ export const SyntaxKind = {
 
     DoubleAmpersandToken: 'DoubleAmpersandToken',
     DoublePipeToken: 'DoublePipeToken',
-    DoubleEqualToken: 'DoubleEqualToken',
-    BangEqualToken: 'BangEqualToken',
+    DoubleEqualsToken: 'DoubleEqualsToken',
+    BangEqualsToken: 'BangEqualsToken',
     EqualsToken: 'EqualsToken',
     PlusToken: 'PlusToken',
     MinusToken: 'MinusToken',
