@@ -15,7 +15,7 @@ export class ParenthesizedExpression extends SyntaxNode {
      * @param {SyntaxNode} expression - The expression syntax token.
      */
     constructor(expression) {
-        super(SyntaxKind.ParenthesizedExpression, expression.pos);
+        super(SyntaxKind.ParenthesizedExpression, expression.location);
 
         this.expression = expression;
     };

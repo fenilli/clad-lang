@@ -16,7 +16,7 @@ export class NumericLiteral extends SyntaxNode {
      * @param {SyntaxToken} number - The number syntax token.
      */
     constructor(number) {
-        super(SyntaxKind.NumericLiteral, number.pos);
+        super(SyntaxKind.NumericLiteral, number.location);
 
         this.number = number;
     };

@@ -287,7 +287,8 @@ export class Scanner {
                 } else if (this.#isLetter(this.#current) || this.#current === '_') {
                     _kind = this.#getIdentifierOrKeywordTokenKind();
                 } else {
-                    this.#diagnostics.reportInvalidToken(this.#current, this.#cursor++)
+                    _kind = SyntaxKind.UnexpectedToken;
+                    this.#cursor++;
                 };
 
                 break;
@@ -297,6 +298,8 @@ export class Scanner {
         const _location = this.#getLocation(_start);
         const _text = this.#getText(_start, this.#cursor);
         const _value = this.#getValue(_kind, _text);
+
+        if (_kind === SyntaxKind.UnexpectedToken) this.#diagnostics.reportInvalidToken(this.#current, _location)
 
         return new SyntaxToken(_kind, _location, _text, _value);
     };

@@ -18,7 +18,7 @@ export class InfixExpression extends SyntaxNode {
      * @param {SyntaxNode} right - The right expression node.
      */
     constructor(left, operator, right) {
-        super(SyntaxKind.InfixExpression, left.pos);
+        super(SyntaxKind.InfixExpression, left.location);
 
         this.left = left;
         this.operator = operator;

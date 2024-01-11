@@ -17,7 +17,7 @@ export class PrefixExpression extends SyntaxNode {
      * @param {SyntaxNode} operand - The operand expression node.
      */
     constructor(operator, operand) {
-        super(SyntaxKind.PrefixExpression, operator.pos);
+        super(SyntaxKind.PrefixExpression, operator.location);
 
         this.operator = operator;
         this.operand = operand;

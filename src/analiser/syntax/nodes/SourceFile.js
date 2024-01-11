@@ -15,7 +15,7 @@ export class SourceFile extends SyntaxNode {
      * @param {SyntaxNode} body - The body of the source file
      */
     constructor(body) {
-        super(SyntaxKind.SourceFile, body.pos);
+        super(SyntaxKind.SourceFile, body.location);
 
         this.body = body;
     };

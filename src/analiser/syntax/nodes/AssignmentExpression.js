@@ -18,7 +18,7 @@ export class AssignmentExpression extends SyntaxNode {
      * @param {SyntaxNode} expression - The right expression node.
      */
     constructor(identifier, operator, expression) {
-        super(SyntaxKind.AssignmentExpression, identifier.pos);
+        super(SyntaxKind.AssignmentExpression, identifier.location);
 
         this.identifier = identifier;
         this.operator = operator;

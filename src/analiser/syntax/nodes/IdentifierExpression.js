@@ -16,7 +16,7 @@ export class IdentifierExpression extends SyntaxNode {
      * @param {SyntaxToken} identifier - The identifier syntax token.
      */
     constructor(identifier) {
-        super(SyntaxKind.IdentifierExpression, identifier.pos);
+        super(SyntaxKind.IdentifierExpression, identifier.location);
 
         this.identifier = identifier;
     };

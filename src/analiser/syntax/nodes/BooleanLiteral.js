@@ -16,7 +16,7 @@ export class BooleanLiteral extends SyntaxNode {
      * @param {SyntaxToken} bool - The boolean syntax token.
      */
     constructor(bool) {
-        super(SyntaxKind.BooleanLiteral, bool.pos);
+        super(SyntaxKind.BooleanLiteral, bool.location);
 
         this.bool = bool;
     };

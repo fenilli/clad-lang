@@ -14,11 +14,11 @@ export class Diagnostic {
      * Creates an instance of Diagnostic.
      *
      * @param {string} message - The diagnostic message describing the issue.
-     * @param {{ start: number, end: number }} span - The position in the source code where the issue is located.
+     * @param {{ start: number, end: number, line: number, column: number }} location - The position in the source code where the issue is located.
      */
-    constructor(message, span) {
+    constructor(message, location) {
         this.message = message;
-        this.span = span;
+        this.location = location;
     };
 };
 
@@ -41,10 +41,10 @@ export class DiagnosticBag {
      * Adds a Diagnostic to the DiagnosticBag
      * 
      * @param {string} message - The diagnostic message describing the issue.
-     * @param {{ start: number, end: number }} end - The position in the source code where the issue is located.
+     * @param {{ start: number, end: number, line: number, column: number }} location - The position in the source code where the issue is located.
      */
-    #report(message, end) {
-        this.#diagnostics.push(new Diagnostic(message, end));
+    #report(message, location) {
+        this.#diagnostics.push(new Diagnostic(message, location));
     };
 
     /**
@@ -71,12 +71,11 @@ export class DiagnosticBag {
      * Adds a report on invalid scanned tokens.
      * 
      * @param {string} token - The invalid token.
-     * @param {number} at - The position in the source code where the token is located.
+     * @param {{ start: number; end: number; line: number; column: number; }} location - The location in the source code where the token is located.
      */
-    reportInvalidToken(token, at) {
+    reportInvalidToken(token, location) {
         const message = `Scanner: Invalid token found "${token}".`;
-        const span = { start: at, end: at + token.length };
-        this.#report(message, span);
+        this.#report(message, location);
     };
 
     /**
@@ -87,8 +86,7 @@ export class DiagnosticBag {
      */
     reportUnexpectedToken(found, expected) {
         const message = `Parser: Unexpected token found <${found.kind}>, expected <${expected}>`;
-        const span = { start: found.pos, end: found.pos + (found.text?.length || 1) };
-        this.#report(message, span);
+        this.#report(message, found.location);
     };
 
     /**
@@ -99,8 +97,7 @@ export class DiagnosticBag {
      */
     reportUndefinedPrefixOperator(operator, operand) {
         const message = `Prefix operator <${operator.text}> is not defined for type <${operand.type}>.`;
-        const span = { start: operator.pos, end: operator.pos + (operator.text?.length || 1) };
-        this.#report(message, span);
+        this.#report(message, operator.location);
     };
 
     /**
@@ -112,8 +109,7 @@ export class DiagnosticBag {
      */
     reportUndefinedInfixOperator(operator, left, right) {
         const message = `Infix operator <${operator.text}> is not defined for types <${left.type}> and <${right.type}>.`;
-        const span = { start: operator.pos, end: operator.pos + (operator.text?.length || 1) };
-        this.#report(message, span);
+        this.#report(message, operator.location);
     };
 
     /**
@@ -123,7 +119,6 @@ export class DiagnosticBag {
      */
     reportUndefinedIdentifier(identifier) {
         const message = `Identifier <${identifier.text}> is not defined.`;
-        const span = { start: identifier.pos, end: identifier.pos + (identifier.text?.length || 1) };
-        this.#report(message, span);
+        this.#report(message, identifier.location);
     };
 };

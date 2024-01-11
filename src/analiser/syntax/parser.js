@@ -101,7 +101,7 @@ export class Parser {
         if (this.#current.kind === kind) return this.#tokens[this.#cursor++];
 
         this.#diagnostics.reportUnexpectedToken(this.#current, kind);
-        return new SyntaxToken(kind, this.#current.pos);
+        return new SyntaxToken(kind, this.#current.location);
     };
 
     /**
