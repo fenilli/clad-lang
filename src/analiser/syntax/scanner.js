@@ -27,6 +27,12 @@ export class Scanner {
      */
     #cursor = 0;
 
+    /** 
+     * Current location of the scanner.
+    */
+    #column = 1;
+    #line = 1;
+
     /**
      * Creates a Scanner instance.
      * 
@@ -80,6 +86,15 @@ export class Scanner {
             case 'false': return SyntaxKind.FalseKeyword;
             default: return SyntaxKind.IdentifierToken;
         };
+    };
+
+    /**
+     * Get the current location of the input.
+     * 
+     * @param {number} start
+     */
+    #getLocation(start) {
+        return { start, end: this.#cursor, line: this.#line + (this.#cursor - start), column: this.#column };
     };
 
     /**
@@ -182,6 +197,12 @@ export class Scanner {
      */
     #getWhitespaceTokenKind() {
         while ([' ', '\t', '\n', '\r'].includes(this.#current)) {
+            switch (this.#current) {
+                case '\n': case '\r': {
+                    this.#column++;
+                    this.#line = 1;
+                };
+            };
             this.#cursor++;
         };
 
@@ -273,8 +294,10 @@ export class Scanner {
             };
         };
 
+        const _location = this.#getLocation(_start);
         const _text = this.#getText(_start, this.#cursor);
         const _value = this.#getValue(_kind, _text);
-        return new SyntaxToken(_kind, _start, _text, _value);
+
+        return new SyntaxToken(_kind, _location, _text, _value);
     };
 };
