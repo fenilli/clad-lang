@@ -1,5 +1,30 @@
-import { SyntaxKind, SyntaxToken } from './factory/index.js';
+import { SyntaxFacts, SyntaxKind, SyntaxToken } from './factory/index.js';
 import { DiagnosticBag } from '../diagnostic.js';
+
+/**
+ * Checks if the character is a possible identifier.
+ * 
+ * @param {string} char
+ * @returns {boolean}
+ */
+const isIdentifier = (char) => {
+    return char >= 'a' && char <= 'z' || char >= 'A' && char <= 'Z' || char === '_';
+};
+
+/**
+ * Checks if the character is a number.
+ * 
+ * @param {string} char
+ * @returns {boolean}
+ */
+const isNumber = (char) => {
+    switch (char) {
+        case '0': case '1': case '2': case '3': case '4':
+        case '5': case '6': case '7': case '8': case '9':
+            return true;
+        default: return false;
+    };
+};
 
 /**
  * Class representing a scanner for lexical analysis.
@@ -43,6 +68,22 @@ export class Scanner {
     };
 
     /**
+     * Moves the cursor ahead one character.
+     */
+    #moveCursor() {
+        this.#cursor++;
+        this.#column++;
+    };
+
+    /**
+     * Change the scanner state to the next line.
+     */
+    #nextLine() {
+        this.#line++;
+        this.#column = 1;
+    };
+
+    /**
      * Returns the current character at the current index
      * 
      * @returns {string}
@@ -54,78 +95,6 @@ export class Scanner {
     };
 
     /**
-     * Checks if the character is a letter.
-     * 
-     * @param {string} char
-     * @returns {boolean}
-     */
-    #isLetter(char) {
-        return char >= 'a' && char <= 'z' || char >= 'A' && char <= 'Z';
-    };
-
-    /**
-     * Checks if the character is a number.
-     * 
-     * @param {string} char
-     * @returns {boolean}
-     */
-    #isNumber(char) {
-        return !isNaN(parseFloat(char));
-    };
-
-    /**
-     * Checks if the text is a keyword or identifier.
-     * 
-     * @param {string} text
-     * 
-     * @returns {SyntaxKind}
-     */
-    #isKeywordOrIdentifier(text) {
-        switch (text) {
-            case 'true': return SyntaxKind.TrueKeyword;
-            case 'false': return SyntaxKind.FalseKeyword;
-            default: return SyntaxKind.IdentifierToken;
-        };
-    };
-
-    /**
-     * Get the current location of the input.
-     * 
-     * @param {number} start
-     */
-    #getLocation(start) {
-        return { start, end: this.#cursor, line: this.#line + (this.#cursor - start), column: this.#column };
-    };
-
-    /**
-     * Gets text from the input based on a start and end positions.
-     * 
-     * @param {number} start
-     * @param {number} end
-     * 
-     * @returns {string}
-     */
-    #getText(start, end) {
-        return this.#input.slice(start, end);
-    };
-
-    /**
-     * Gets a transformed value from the kind and text.
-     * 
-     * @param {SyntaxKind} kind
-     * @param {string} text
-     * 
-     * @returns {any}
-     */
-    #getValue(kind, text) {
-        switch (kind) {
-            case SyntaxKind.TrueKeyword: return true;
-            case SyntaxKind.FalseKeyword: return false;
-            case SyntaxKind.NumberToken: return Number(text);
-        };
-    };
-
-    /**
      * Reads and returns the kind of a single character token.
      * 
      * @param {string} char 
@@ -133,10 +102,9 @@ export class Scanner {
      * @return {SyntaxKind}
      */
     #getSingleCharacterTokenKind(char) {
-        this.#cursor++;
+        this.#moveCursor();
 
         switch (char) {
-            case '\0': return SyntaxKind.EndOfFileToken;
             case '+': return SyntaxKind.PlusToken;
             case '-': return SyntaxKind.MinusToken;
             case '*': return SyntaxKind.AsteriskToken;
@@ -155,24 +123,24 @@ export class Scanner {
      * @return {SyntaxKind}
      */
     #getDoubleCharacterTokenKind(char) {
-        this.#cursor++;
+        this.#moveCursor();
 
         switch (char) {
             case '&': {
                 if (this.#current === '&') {
-                    this.#cursor++;
+                    this.#moveCursor();
                     return SyntaxKind.DoubleAmpersandToken;
                 };
             };
             case '|': {
                 if (this.#current === '|') {
-                    this.#cursor++;
+                    this.#moveCursor();
                     return SyntaxKind.DoublePipeToken;
                 };
             };
             case '=': {
                 if (this.#current === '=') {
-                    this.#cursor++;
+                    this.#moveCursor();
                     return SyntaxKind.DoubleEqualsToken;
                 };
 
@@ -180,7 +148,7 @@ export class Scanner {
             };
             case '!': {
                 if (this.#current === '=') {
-                    this.#cursor++;
+                    this.#moveCursor();
                     return SyntaxKind.BangEqualsToken;
                 };
 
@@ -188,53 +156,6 @@ export class Scanner {
             };
             default: return SyntaxKind.UnexpectedToken;
         }
-    };
-
-    /**
-     * Reads whitespaces until its any other token.
-     * 
-     * @return {SyntaxKind}
-     */
-    #getWhitespaceTokenKind() {
-        while ([' ', '\t', '\n', '\r'].includes(this.#current)) {
-            switch (this.#current) {
-                case '\n': case '\r': {
-                    this.#column++;
-                    this.#line = 1;
-                };
-            };
-            this.#cursor++;
-        };
-
-        return SyntaxKind.WhitespaceToken;
-    };
-
-    /**
-     * Reads numbers until its any other token.
-     * 
-     * @return {SyntaxKind}
-     */
-    #getNumberTokenKind() {
-        while (this.#isNumber(this.#current)) {
-            this.#cursor++;
-        };
-
-        return SyntaxKind.NumberToken;
-    };
-
-    /**
-     * Reads identifier characters until its any other token.
-     * 
-     * @return {SyntaxKind}
-     */
-    #getIdentifierOrKeywordTokenKind() {
-        const _start = this.#cursor;
-
-        while (this.#isLetter(this.#current) || this.#isNumber(this.#current) || this.#current === '_') {
-            this.#cursor++;
-        };
-
-        return this.#isKeywordOrIdentifier(this.#getText(_start, this.#cursor));
     };
 
     /**
@@ -254,53 +175,71 @@ export class Scanner {
         let _start = this.#cursor;
 
         switch (this.#current) {
-            case '\0':
-            case '+':
-            case '-':
-            case '*':
-            case '/':
-            case '(':
-            case ')': {
+            case '\0': {
+                _kind = SyntaxKind.EndOfFileToken;
+
+                break;
+            };
+            case '+': case '-': case '*': case '/': case '(': case ')': {
                 _kind = this.#getSingleCharacterTokenKind(this.#current);
 
                 break;
             };
-            case '&':
-            case '|':
-            case '=':
-            case '!': {
+            case '&': case '|': case '=': case '!': {
                 _kind = this.#getDoubleCharacterTokenKind(this.#current);
 
                 break;
             };
-            case ' ':
-            case '\t':
-            case '\n':
-            case '\r': {
-                _kind = this.#getWhitespaceTokenKind();
+            case ' ': case '\t': case '\n': case '\r': {
+                _kind = SyntaxKind.WhitespaceToken;
+
+                while ([' ', '\t', '\n', '\r'].includes(this.#current)) {
+                    switch (this.#current) {
+                        case '\n': case '\r': {
+                            this.#nextLine();
+                        };
+                    };
+                    this.#moveCursor();
+                };
 
                 break;
             };
+            case '0': case '1': case '2': case '3': case '4':
+            case '5': case '6': case '7': case '8': case '9':
+                _kind = SyntaxKind.NumberToken;
+                this.#moveCursor();
+
+                while (isNumber(this.#current)) {
+                    this.#moveCursor();
+                };
+
+                break;
             default: {
-                if (this.#isNumber(this.#current)) {
-                    _kind = this.#getNumberTokenKind();
-                } else if (this.#isLetter(this.#current) || this.#current === '_') {
-                    _kind = this.#getIdentifierOrKeywordTokenKind();
-                } else {
-                    _kind = SyntaxKind.UnexpectedToken;
-                    this.#cursor++;
+                if (isIdentifier(this.#current)) {
+                    _kind = SyntaxKind.IdentifierToken;
+                    this.#moveCursor();
+
+                    while (isIdentifier(this.#current) || isNumber(this.#current)) {
+                        this.#moveCursor();
+                    };
                 };
 
                 break;
             };
         };
 
-        const _location = this.#getLocation(_start);
-        const _text = this.#getText(_start, this.#cursor);
-        const _value = this.#getValue(_kind, _text);
+        const _text = this.#input.slice(_start, this.#cursor);
+        const _location = { start: _start, end: this.#cursor, column: this.#column - _text.length, line: this.#line };
 
-        if (_kind === SyntaxKind.UnexpectedToken) this.#diagnostics.reportInvalidToken(this.#current, _location)
+        if (_kind === SyntaxKind.IdentifierToken) {
+            _kind = SyntaxFacts.isKeywordOrIdentifier(_text);
+        };
 
-        return new SyntaxToken(_kind, _location, _text, _value);
+        if (_kind === SyntaxKind.UnexpectedToken) {
+            this.#diagnostics.reportInvalidToken(this.#current, _location);
+            this.#moveCursor();
+        };
+
+        return new SyntaxToken(_kind, _location, _text, SyntaxFacts.getFormatter(_kind)(_text));
     };
 };

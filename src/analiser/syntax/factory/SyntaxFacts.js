@@ -5,6 +5,37 @@ import { SyntaxKind } from "./index.js";
  */
 export class SyntaxFacts {
     /**
+     * Gets the formatter from the specified kind
+     * 
+     * @param {SyntaxKind} kind - The expected token kind.
+     * 
+     * @returns {(text: string) => any}
+     */
+    static getFormatter(kind) {
+        switch (kind) {
+            case SyntaxKind.TrueKeyword: return () => true;
+            case SyntaxKind.FalseKeyword: return () => false;
+            case SyntaxKind.NumberToken: return (text) => Number(text);
+            default: return (text) => text;
+        };
+    };
+
+    /**
+     * Checks if the text is a keyword or identifier.
+     * 
+     * @param {string} text
+     * 
+     * @returns {SyntaxKind}
+     */
+    static isKeywordOrIdentifier(text) {
+        switch (text) {
+            case 'true': return SyntaxKind.TrueKeyword;
+            case 'false': return SyntaxKind.FalseKeyword;
+            default: return SyntaxKind.IdentifierToken;
+        };
+    };
+
+    /**
      * Gets the prefix precedence level
      * 
      * @param {SyntaxKind} kind - The expected token kind.

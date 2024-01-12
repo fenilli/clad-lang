@@ -71,7 +71,7 @@ export class DiagnosticBag {
      * Adds a report on invalid scanned tokens.
      * 
      * @param {string} token - The invalid token.
-     * @param {{ start: number; end: number; line: number; column: number; }} location - The location in the source code where the token is located.
+     * @param {{ start: number, end: number, line: number, column: number }} location - The location in the source code where the token is located.
      */
     reportInvalidToken(token, location) {
         const message = `Scanner: Invalid token found "${token}".`;

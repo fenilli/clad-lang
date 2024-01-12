@@ -87,7 +87,7 @@ export class REPL {
                 for (const diagnostic of diagnostics) {
                     const column = diagnostic.location.column;
                     const line = diagnostic.location.line;
-                    const lineCount = `(${column}, ${line})`;
+                    const lineCount = `(L: ${line}, C: ${column})`;
 
                     this.#write('\n\x1b[31m');
                     this.#write(`${lineCount} ${diagnostic.message}\n`);
@@ -97,11 +97,13 @@ export class REPL {
                     const error = input.slice(diagnostic.location.start, diagnostic.location.end);
                     const suffix = input.slice(diagnostic.location.end);
 
-                    this.#write(`${' '.repeat(lineCount.length + 1)}└── ${prefix}`);
-                    this.#write('\x1b[31m');
-                    this.#write(`${error}`);
-                    this.#write('\x1b[0m');
-                    this.#write(`${suffix}\n`);
+                    if (prefix.length !== 0 || error.length !== 0 || suffix.length !== 0) {
+                        this.#write(`${' '.repeat(lineCount.length + 1)}└── ${prefix}`);
+                        this.#write('\x1b[31m');
+                        this.#write(`${error}`);
+                        this.#write('\x1b[0m');
+                        this.#write(`${suffix}\n`);
+                    };
                 };
             };
 
