@@ -39,15 +39,15 @@ export class Annotator {
     #diagnostics = new DiagnosticBag();
 
     /**
-     * @type {Object}
+     * @type {Map<string, any>}
      */
-    #scope;
+    #environment;
 
     /**
-     * @param {Object} scope 
+     * @param {Map<string, any>} environment 
      */
-    constructor(scope) {
-        this.#scope = scope;
+    constructor(environment) {
+        this.#environment = environment;
     };
 
     /**
@@ -102,12 +102,14 @@ export class Annotator {
      * @param {IdentifierExpression} node
      */
     #annotatedIdentifierExpression(node) {
-        if (!node.identifier.text || !(node.identifier.text in this.#scope)) {
+        const identifierName = node.identifier.text || '';
+        const variable = this.#environment.get(identifierName);
+
+        if (typeof variable === 'undefined') {
             this.#diagnostics.reportUndefinedIdentifier(node.identifier);
-            return new AnnotatedNumericLiteral(0);
         };
 
-        return new AnnotatedIdentifierExpression(node.identifier.text, typeof this.#scope[node.identifier.text]);
+        return new AnnotatedIdentifierExpression(identifierName || '', typeof variable);
     };
 
     /**

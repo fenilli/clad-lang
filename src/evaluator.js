@@ -18,15 +18,15 @@ import {
  */
 export class Evaluator {
     /**
-     * @type {Object}
+     * @type {Map<string, any>}
      */
-    #scope;
+    #environment;
 
     /**
-     * @param {Object} scope 
+     * @param {Map<string, any>} environment 
      */
-    constructor(scope) {
-        this.#scope = scope;
+    constructor(environment) {
+        this.#environment = environment;
     };
 
     /**
@@ -41,11 +41,11 @@ export class Evaluator {
     evaluate(node) {
         if (node instanceof AnnotatedAssignmentExpression) {
             const expression = this.evaluate(node.expression);
-            this.#scope[node.identifier] = expression;
+            this.#environment.set(node.identifier, expression);
             return expression;
         };
         if (node instanceof AnnotatedBooleanLiteral) return node.value;
-        if (node instanceof AnnotatedIdentifierExpression) return this.#scope[node.identifier];
+        if (node instanceof AnnotatedIdentifierExpression) return this.#environment.get(node.identifier);
         if (node instanceof AnnotatedInfixExpression) {
             const left = this.evaluate(node.left);
             const right = this.evaluate(node.right);

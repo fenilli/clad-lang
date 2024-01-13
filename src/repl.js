@@ -32,6 +32,11 @@ export class REPL {
     #cli = rl.createInterface({ input: this.#in, output: this.#out });
 
     /**
+     * The global environment to be passed to the compiler.
+     */
+    #environment = new Map();
+
+    /**
      * Writes the provided buffer to the standard output.
      * 
      * @param {string} buffer - The buffer to be written.
@@ -64,7 +69,6 @@ export class REPL {
      */
     run() {
         let debug = true;
-        const scope = {};
 
         this.#cli.on('line', (input) => {
             if (input === '#clear') return this.#write('\u001Bc');
@@ -77,7 +81,7 @@ export class REPL {
             };
 
             const { evaluate } = new Compiler();
-            const { ast, result, diagnostics } = evaluate(input, scope);
+            const { ast, result, diagnostics } = evaluate(input, this.#environment);
 
             if (debug) this.#printTree(ast);
 
