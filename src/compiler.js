@@ -1,6 +1,7 @@
 import { Annotator } from "./analiser/annotator/index.js";
 import { Diagnostic } from "./analiser/diagnostic.js";
 import { Parser } from "./analiser/syntax/parser.js";
+import { IdentifierSymbol } from "./IdentifierSymbol.js";
 import { Evaluator } from "./evaluator.js";
 
 /**
@@ -12,7 +13,7 @@ export class Compiler {
      * along with any diagnostic messages.
      *
      * @param {string} input - The source code to be compiled.
-     * @param {Map<string, any>} environment - The source code to be compiled.
+     * @param {Map<IdentifierSymbol, any>} environment - The source code to be compiled.
      * @returns {{ ast: any, result: any, diagnostics: Diagnostic[] }} An object containing the AST and an array of diagnostic messages.
      */
     evaluate(input, environment = new Map()) {

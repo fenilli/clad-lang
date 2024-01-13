@@ -1,3 +1,4 @@
+import { IdentifierSymbol } from '../../../IdentifierSymbol.js';
 import {
     AnnotatedKind,
     AnnotatedNode,
@@ -12,11 +13,10 @@ export class AnnotatedIdentifierExpression extends AnnotatedNode {
     /**
      * Creates an instance of AnnotatedIdentifierExpression.
      *
-     * @param {string} identifier - The identifier name.
-     * @param {string} type - The type of the identifier.
+     * @param {IdentifierSymbol} identifier - The identifier name.
      */
-    constructor(identifier, type) {
-        super(AnnotatedKind.IdentifierExpression, type);
+    constructor(identifier) {
+        super(AnnotatedKind.IdentifierExpression, identifier.type);
 
         this.identifier = identifier;
     };

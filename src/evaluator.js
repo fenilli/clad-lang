@@ -12,18 +12,19 @@ import {
     AnnotatedKind,
     AnnotatedNode,
 } from './analiser/annotator/factory/index.js';
+import { IdentifierSymbol } from './IdentifierSymbol.js';
 
 /**
  * Evaluator class responsible for evaluating syntax tree nodes.
  */
 export class Evaluator {
     /**
-     * @type {Map<string, any>}
+     * @type {Map<IdentifierSymbol, any>}
      */
     #environment;
 
     /**
-     * @param {Map<string, any>} environment 
+     * @param {Map<IdentifierSymbol, any>} environment 
      */
     constructor(environment) {
         this.#environment = environment;

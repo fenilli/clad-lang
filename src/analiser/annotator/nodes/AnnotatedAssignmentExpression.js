@@ -1,3 +1,4 @@
+import { IdentifierSymbol } from '../../../IdentifierSymbol.js';
 import {
     AnnotatedKind,
     AnnotatedNode,
@@ -12,7 +13,7 @@ export class AnnotatedAssignmentExpression extends AnnotatedNode {
     /**
      * Creates an instance of AnnotatedAssignmentExpression.
      * 
-     * @param {string} identifier - The identifier name.
+     * @param {IdentifierSymbol} identifier - The identifier name.
      * @param {AnnotatedNode} expression - The expression node to be assigned.
      */
     constructor(identifier, expression) {

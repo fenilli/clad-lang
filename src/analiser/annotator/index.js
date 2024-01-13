@@ -23,9 +23,9 @@ import {
     AnnotatedPrefixExpression,
     AnnotatedSourceFile,
 } from './nodes/index.js';
-import { AnnotatedKind } from './factory/AnnotatedKind.js';
-import { AnnotatedNode } from './factory/AnnotatedNode.js';
+import { AnnotatedKind, AnnotatedNode } from './factory/index.js';
 import { DiagnosticBag } from '../diagnostic.js';
+import { IdentifierSymbol } from '../../IdentifierSymbol.js';
 
 /**
  * Represents am Annotator class for annotating the types to a annotated syntax tree.
@@ -39,12 +39,12 @@ export class Annotator {
     #diagnostics = new DiagnosticBag();
 
     /**
-     * @type {Map<string, any>}
+     * @type {Map<IdentifierSymbol, any>}
      */
     #environment;
 
     /**
-     * @param {Map<string, any>} environment 
+     * @param {Map<IdentifierSymbol, any>} environment 
      */
     constructor(environment) {
         this.#environment = environment;
@@ -83,8 +83,10 @@ export class Annotator {
     #annotatedAssignmentExpression(node) {
         /** @type {AnnotatedNode} */
         const expression = this.annotate(node.expression);
+        const identifier = new IdentifierSymbol(node.identifier.text || '', expression.type);
+        this.#environment.set(identifier, null);
 
-        return new AnnotatedAssignmentExpression(node.identifier.text || '', expression);
+        return new AnnotatedAssignmentExpression(identifier, expression);
     };
 
     /**
@@ -103,13 +105,15 @@ export class Annotator {
      */
     #annotatedIdentifierExpression(node) {
         const identifierName = node.identifier.text || '';
-        const variable = this.#environment.get(identifierName);
+
+        const variable = [...this.#environment.keys()].find((symbol) => symbol.name === identifierName);
 
         if (typeof variable === 'undefined') {
             this.#diagnostics.reportUndefinedIdentifier(node.identifier);
+            return new AnnotatedNumericLiteral(0);
         };
 
-        return new AnnotatedIdentifierExpression(identifierName || '', typeof variable);
+        return new AnnotatedIdentifierExpression(variable);
     };
 
     /**
