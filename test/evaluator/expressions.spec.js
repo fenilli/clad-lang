@@ -1,6 +1,7 @@
 import { it } from 'node:test';
 
 import { assertResult } from './utils.js';
+import { IdentifierSymbol } from '../../src/IdentifierSymbol.js';
 
 export default () => {
     it('evaluates prefix expressions', () => {
@@ -62,6 +63,6 @@ export default () => {
     });
 
     it('evaluates assignement expressions', () => {
-        assertResult('x = 42', 42, { x: 42 });
+        assertResult('x = 42', 42);
     });
 };

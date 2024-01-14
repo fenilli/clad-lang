@@ -8,12 +8,10 @@ import { SyntaxKind } from '../../src/analiser/syntax/factory/SyntaxKind.js';
  * 
  * @param {string} input 
  * @param {any} expected
- * @param {any} [scope]
  */
-export const assertResult = (input, expected, scope = {}) => {
-    const { evaluate } = new Compiler();
-
-    const { result, diagnostics } = evaluate(input, scope);
+export const assertResult = (input, expected) => {
+    const compiler = new Compiler(input);
+    const { result, diagnostics } = compiler.evaluate();
 
     assert.deepEqual(diagnostics, []);
     assert.equal(result, expected);
