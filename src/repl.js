@@ -75,6 +75,12 @@ export class REPL {
         this.#cli.on('line', (input) => {
             if (input === '#clear') return this.#write('\u001Bc');
             if (input === '#exit') return this.#cli.close();
+            if (input === '#reset') {
+                this.#write('Scope reseted!!\n');
+
+                previous = null;
+                return this.#cli.prompt();
+            };
             if (input === '#debug') {
                 this.#write(`${debug ? 'Deactivated' : 'Activated'} debug mode!\n`);
 
