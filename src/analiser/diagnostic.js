@@ -121,4 +121,14 @@ export class DiagnosticBag {
         const message = `Identifier <${identifier.text}> is not defined.`;
         this.#report(message, identifier.location);
     };
+
+    /**
+     * Adds a report on an already defined identifier for a expression.
+     * 
+     * @param {SyntaxToken} identifier - The identifier used in the expression.
+     */
+    reportAlreadyDefinedIdentifier(identifier) {
+        const message = `Identifier <${identifier.text}> is already defined.`;
+        this.#report(message, identifier.location);
+    };
 };

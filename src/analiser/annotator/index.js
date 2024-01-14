@@ -23,7 +23,12 @@ import {
     AnnotatedPrefixExpression,
     AnnotatedSourceFile,
 } from './nodes/index.js';
-import { AnnotatedKind, AnnotatedNode } from './factory/index.js';
+import {
+    AnnotatedGlobalScope,
+    AnnotatedKind,
+    AnnotatedNode,
+    AnnotatedScope
+} from './factory/index.js';
 import { DiagnosticBag } from '../diagnostic.js';
 import { IdentifierSymbol } from '../../IdentifierSymbol.js';
 
@@ -39,15 +44,58 @@ export class Annotator {
     #diagnostics = new DiagnosticBag();
 
     /**
-     * @type {Map<IdentifierSymbol, any>}
+     * @type {AnnotatedScope}
      */
-    #environment;
+    #scope;
 
     /**
-     * @param {Map<IdentifierSymbol, any>} environment 
+     * @param {AnnotatedScope | null} parent
      */
-    constructor(environment) {
-        this.#environment = environment;
+    constructor(parent) {
+        this.#scope = new AnnotatedScope(parent);
+    };
+
+    /**
+     * Creates an instance of AnnotatedGlobalScope with the source.
+     * 
+     * @param {AnnotatedGlobalScope | null} previous
+     * @param {SourceFile} source
+    */
+    static annotateGlobalScope(previous, source) {
+        const parent = this.createParentScope(previous);
+        const annotator = new Annotator(parent);
+        const annotatedSource = annotator.annotate(source);
+        const diagnostics = annotator.getDiagnostics();
+        const variables = annotator.#scope.getDeclaredVariables();
+
+        return new AnnotatedGlobalScope(previous, diagnostics, variables, annotatedSource);
+    };
+
+    /**
+     * @param {AnnotatedGlobalScope | null} previous
+     */
+    static createParentScope(previous) {
+        /** @type {(AnnotatedGlobalScope | null)[]} */
+        const stack = [];
+
+        while (previous !== null) {
+            stack.push(previous);
+            previous = previous.previous;
+        };
+
+        /** @type {AnnotatedScope | null} */
+        let parent = null;
+        while (stack.length > 0) {
+            const global = stack.pop();
+            const scope = new AnnotatedScope(parent);
+
+            for (const v of global?.variables || []) {
+                scope.declare(v);
+            };
+            parent = scope;
+        };
+
+        return parent;
     };
 
     /**
@@ -81,10 +129,16 @@ export class Annotator {
      * @param {AssignmentExpression} node
      */
     #annotatedAssignmentExpression(node) {
+        const identifierName = node.identifier.text || '';
+
         /** @type {AnnotatedNode} */
         const expression = this.annotate(node.expression);
-        const identifier = new IdentifierSymbol(node.identifier.text || '', expression.type);
-        this.#environment.set(identifier, null);
+        const identifier = new IdentifierSymbol(identifierName, expression.type);
+
+        const variable = this.#scope.declare(identifier);
+        if (!variable) {
+            this.#diagnostics.reportAlreadyDefinedIdentifier(node.identifier);
+        };
 
         return new AnnotatedAssignmentExpression(identifier, expression);
     };
@@ -106,9 +160,8 @@ export class Annotator {
     #annotatedIdentifierExpression(node) {
         const identifierName = node.identifier.text || '';
 
-        const variable = [...this.#environment.keys()].find((symbol) => symbol.name === identifierName);
-
-        if (typeof variable === 'undefined') {
+        const variable = this.#scope.lookup(identifierName);
+        if (!variable) {
             this.#diagnostics.reportUndefinedIdentifier(node.identifier);
             return new AnnotatedNumericLiteral(0);
         };

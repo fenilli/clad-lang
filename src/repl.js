@@ -69,6 +69,8 @@ export class REPL {
      */
     run() {
         let debug = true;
+        /** @type {Compiler | null} */
+        let previous = null;
 
         this.#cli.on('line', (input) => {
             if (input === '#clear') return this.#write('\u001Bc');
@@ -80,13 +82,14 @@ export class REPL {
                 return this.#cli.prompt();
             };
 
-            const { evaluate } = new Compiler();
-            const { ast, result, diagnostics } = evaluate(input, this.#environment);
+            const compiler = previous === null ? new Compiler(input) : previous.continue(input);
+            const { ast, result, diagnostics } = compiler.evaluate(this.#environment);
 
             if (debug) this.#printTree(ast);
 
             if (diagnostics.length === 0) {
                 this.#write(`${result}\n`);
+                previous = compiler;
             } else {
                 for (const diagnostic of diagnostics) {
                     const column = diagnostic.location.column;
