@@ -5,6 +5,7 @@ import {
 import {
     AnnotatedNode,
 } from './annotator/factory/index.js';
+import { IdentifierSymbol } from '../IdentifierSymbol.js';
 
 /**
  * Represents a diagnostic message with information about an issue in the source code.
@@ -125,10 +126,12 @@ export class DiagnosticBag {
     /**
      * Adds a report on an already defined identifier for a expression.
      * 
-     * @param {SyntaxToken} identifier - The identifier used in the expression.
+     * @param {SyntaxToken} node - The node identifier used in the expression.
+     * @param {AnnotatedNode} expression - The identifier used in the expression.
+     * @param {IdentifierSymbol} identifier - The identifier symbol used in the expression.
      */
-    reportAlreadyDefinedIdentifier(identifier) {
-        const message = `Identifier <${identifier.text}> is already defined.`;
-        this.#report(message, identifier.location);
+    reportCannotConvertType(node, expression, identifier) {
+        const message = `Cannot convert <${node.text}> from type <${expression.type}> to type ${identifier.type}.`;
+        this.#report(message, node.location);
     };
 };

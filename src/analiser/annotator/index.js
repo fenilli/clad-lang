@@ -133,11 +133,16 @@ export class Annotator {
 
         /** @type {AnnotatedNode} */
         const expression = this.annotate(node.expression);
-        const identifier = new IdentifierSymbol(identifierName, expression.type);
 
-        const variable = this.#scope.declare(identifier);
-        if (!variable) {
-            this.#diagnostics.reportAlreadyDefinedIdentifier(node.identifier);
+        let identifier = this.#scope.lookup(identifierName);
+        if (!identifier) {
+            identifier = new IdentifierSymbol(identifierName, expression.type)
+            this.#scope.declare(identifier);
+        };
+
+        if (expression.type !== identifier.type) {
+            this.#diagnostics.reportCannotConvertType(node.identifier, expression, identifier);
+            return expression;
         };
 
         return new AnnotatedAssignmentExpression(identifier, expression);
