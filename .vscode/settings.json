@@ -1,9 +1,0 @@
-{
-  "conventionalCommits.scopes": [
-    "scanner",
-    "parser",
-    "evaluator",
-    "repl",
-    "annotator"
-  ]
-}
