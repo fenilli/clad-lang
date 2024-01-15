@@ -20,6 +20,7 @@ export const SyntaxKind = {
     CloseParenthesisToken: 'CloseParenthesisToken',
 
     // Expressions:
+    UnaryExpression: 'UnaryExpression',
     BinaryExpression: 'BinaryExpression',
     ParenthesizedExpression: 'ParenthesizedExpression',
     LiteralExpression: 'LiteralExpression',

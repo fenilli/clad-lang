@@ -4,6 +4,7 @@ import {
     SyntaxFacts,
     SyntaxToken,
     SyntaxTree,
+    UnaryExpressionSyntax,
     BinaryExpressionSyntax,
     ParenthesizedExpressionSyntax,
     LiteralExpressionSyntax,
@@ -72,7 +73,17 @@ export class Parser {
     };
 
     #parseExpression(parentPrecedence = 0) {
-        let left = this.#parsePrimaryExpression();
+        let left;
+        const precedence = SyntaxFacts.getUnaryOperatorPrecedence(this.#current.kind);
+
+        if (precedence !== 0 && precedence >= parentPrecedence) {
+            const operatorToken = this.#matchToken(this.#current.kind);
+            const operand = this.#parseExpression(precedence);
+
+            left = new UnaryExpressionSyntax(operatorToken, operand);
+        } else {
+            left = this.#parsePrimaryExpression();
+        };
 
         while (true) {
             const precedence = SyntaxFacts.getBinaryOperatorPrecedence(this.#current.kind);

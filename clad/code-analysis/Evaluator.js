@@ -1,5 +1,6 @@
 import {
     SyntaxKind,
+    UnaryExpressionSyntax,
     BinaryExpressionSyntax,
     ParenthesizedExpressionSyntax,
     LiteralExpressionSyntax,
@@ -23,11 +24,14 @@ export class Evaluator {
      * @param {import('./index.js').ExpressionSyntax} node
      */
     #evaluateExpression(node) {
-        if (node instanceof LiteralExpressionSyntax)
-            return node.literalToken.value;
+        if (node instanceof UnaryExpressionSyntax) {
+            const operand = this.#evaluateExpression(node.operand);
 
-        if (node instanceof ParenthesizedExpressionSyntax) {
-            return this.#evaluateExpression(node.expression);
+            if (node.operatorToken.kind === SyntaxKind.PlusToken)
+                return operand;
+            else if (node.operatorToken.kind === SyntaxKind.MinusToken)
+                return -operand;
+            else throw new Error(`Unexpected unary operator <${node.operatorToken.kind}>`);
         };
 
         if (node instanceof BinaryExpressionSyntax) {
@@ -44,6 +48,12 @@ export class Evaluator {
                 return left / right;
             else throw new Error(`Unexpected binary operator <${node.operatorToken.kind}>`);
         };
+
+        if (node instanceof ParenthesizedExpressionSyntax)
+            return this.#evaluateExpression(node.expression);
+
+        if (node instanceof LiteralExpressionSyntax)
+            return node.literalToken.value;
 
         throw new Error(`Unexpected node <${node.kind}>`);
     };
