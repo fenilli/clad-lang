@@ -1,6 +1,7 @@
 import {
     Lexer,
     SyntaxKind,
+    SyntaxFacts,
     SyntaxToken,
     SyntaxTree,
     BinaryExpressionSyntax,
@@ -70,28 +71,15 @@ export class Parser {
         return new SyntaxTree(this.#diagnostics, expression, endOfFileToken);
     };
 
-    #parseExpression() {
-        return this.#parseTerm();
-    };
-
-    #parseTerm() {
-        let left = this.#parseFactor();
-
-        while (this.#current.kind === SyntaxKind.PlusToken || this.#current.kind === SyntaxKind.MinusToken) {
-            const operatorToken = this.#matchToken(this.#current.kind);
-            const right = this.#parseFactor();
-            left = new BinaryExpressionSyntax(left, operatorToken, right);
-        };
-
-        return left;
-    };
-
-    #parseFactor() {
+    #parseExpression(parentPrecedence = 0) {
         let left = this.#parsePrimaryExpression();
 
-        while (this.#current.kind === SyntaxKind.StarToken || this.#current.kind === SyntaxKind.SlashToken) {
+        while (true) {
+            const precedence = SyntaxFacts.getBinaryOperatorPrecedence(this.#current.kind);
+            if (precedence === 0 || precedence <= parentPrecedence) break;
+
             const operatorToken = this.#matchToken(this.#current.kind);
-            const right = this.#parsePrimaryExpression();
+            const right = this.#parseExpression(precedence);
             left = new BinaryExpressionSyntax(left, operatorToken, right);
         };
 

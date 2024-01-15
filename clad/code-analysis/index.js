@@ -3,6 +3,7 @@ export { Parser } from './Parser.js';
 export { Evaluator } from './Evaluator.js';
 
 export { SyntaxKind } from './SyntaxKind.js';
+export { SyntaxFacts } from './SyntaxFacts.js';
 export { SyntaxNode } from './SyntaxNode.js';
 export { SyntaxToken } from './SyntaxToken.js';
 export { SyntaxTree } from './SyntaxTree.js';
