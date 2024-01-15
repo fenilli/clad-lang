@@ -4,13 +4,13 @@ import {
     BinaryExpressionSyntax,
     ParenthesizedExpressionSyntax,
     LiteralExpressionSyntax,
-} from './index.js';
+} from './syntax/index.js';
 
 export class Evaluator {
     #root;
 
     /**
-     * @param {import('./index.js').ExpressionSyntax} root
+     * @param {import('./syntax/index.js').ExpressionSyntax} root
      */
     constructor(root) {
         this.#root = root;
@@ -21,7 +21,7 @@ export class Evaluator {
     };
 
     /**
-     * @param {import('./index.js').ExpressionSyntax} node
+     * @param {import('./syntax/index.js').ExpressionSyntax} node
      */
     #evaluateExpression(node) {
         if (node instanceof UnaryExpressionSyntax) {

@@ -1,6 +1,7 @@
 import readline from 'node:readline';
 
-import { Evaluator, SyntaxToken, SyntaxTree } from './code-analysis/index.js';
+import { Evaluator } from './code-analysis/Evaluator.js';
+import { SyntaxToken, SyntaxTree } from './code-analysis/syntax/index.js';
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -8,7 +9,7 @@ const rl = readline.createInterface({
 });
 
 /**
- * @param {import('./code-analysis/SyntaxNode.js').SyntaxNode} node
+ * @param {import('./code-analysis/syntax/SyntaxNode.js').SyntaxNode} node
  * @param {string} indent
  * @param {boolean} isLast
  */

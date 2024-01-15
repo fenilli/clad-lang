@@ -1,6 +1,5 @@
 export { Lexer } from './Lexer.js';
 export { Parser } from './Parser.js';
-export { Evaluator } from './Evaluator.js';
 
 export { SyntaxKind } from './SyntaxKind.js';
 export { SyntaxFacts } from './SyntaxFacts.js';
