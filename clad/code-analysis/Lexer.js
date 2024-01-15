@@ -49,7 +49,7 @@ export class Lexer {
     /**
      * @returns {SyntaxToken}
      */
-    nextToken() {
+    lex() {
         if (this.#position >= this.#text.length) return new SyntaxToken(SyntaxKind.EndOfFileToken, this.#position, '\0', null);
 
         if (isNumber(this.#current)) {
@@ -77,12 +77,14 @@ export class Lexer {
             return new SyntaxToken(SyntaxKind.WhitespaceToken, start, text, null);
         };
 
-        if (this.#current === '+') return new SyntaxToken(SyntaxKind.PlusToken, this.#position++, '+', null);
-        if (this.#current === '-') return new SyntaxToken(SyntaxKind.MinusToken, this.#position++, '-', null);
-        if (this.#current === '*') return new SyntaxToken(SyntaxKind.StarToken, this.#position++, '*', null);
-        if (this.#current === '/') return new SyntaxToken(SyntaxKind.SlashToken, this.#position++, '/', null);
-        if (this.#current === '(') return new SyntaxToken(SyntaxKind.OpenParenthesisToken, this.#position++, '(', null);
-        if (this.#current === ')') return new SyntaxToken(SyntaxKind.CloseParenthesisToken, this.#position++, ')', null);
+        switch (this.#current) {
+            case '+': return new SyntaxToken(SyntaxKind.PlusToken, this.#position++, '+', null);
+            case '-': return new SyntaxToken(SyntaxKind.MinusToken, this.#position++, '-', null);
+            case '*': return new SyntaxToken(SyntaxKind.StarToken, this.#position++, '*', null);
+            case '/': return new SyntaxToken(SyntaxKind.SlashToken, this.#position++, '/', null);
+            case '(': return new SyntaxToken(SyntaxKind.OpenParenthesisToken, this.#position++, '(', null);
+            case ')': return new SyntaxToken(SyntaxKind.CloseParenthesisToken, this.#position++, ')', null);
+        };
 
         const start = this.#position;
         this.#next();

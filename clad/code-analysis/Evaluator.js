@@ -2,7 +2,7 @@ import {
     SyntaxKind,
     BinaryExpressionSyntax,
     ParenthesizedExpressionSyntax,
-    NumberExpressionSyntax,
+    LiteralExpressionSyntax,
 } from './index.js';
 
 export class Evaluator {
@@ -23,8 +23,8 @@ export class Evaluator {
      * @param {import('./index.js').ExpressionSyntax} node
      */
     #evaluateExpression(node) {
-        if (node instanceof NumberExpressionSyntax)
-            return node.numberToken.value;
+        if (node instanceof LiteralExpressionSyntax)
+            return node.literalToken.value;
 
         if (node instanceof ParenthesizedExpressionSyntax) {
             return this.#evaluateExpression(node.expression);

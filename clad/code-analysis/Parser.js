@@ -5,7 +5,7 @@ import {
     SyntaxTree,
     BinaryExpressionSyntax,
     ParenthesizedExpressionSyntax,
-    NumberExpressionSyntax,
+    LiteralExpressionSyntax,
 } from './index.js';
 
 export class Parser {
@@ -24,7 +24,7 @@ export class Parser {
 
         let token;
         do {
-            token = lexer.nextToken();
+            token = lexer.lex();
 
             if (token.kind !== SyntaxKind.WhitespaceToken && token.kind !== SyntaxKind.BadToken)
                 this.#tokens.push(token);
@@ -52,7 +52,7 @@ export class Parser {
     /**
      * @param {SyntaxKind} kind
      */
-    #match(kind) {
+    #matchToken(kind) {
         if (this.#current.kind === kind) return this.#nextToken();
 
         this.#diagnostics.push(`Unexpected token <${this.#current.kind}>, expected <${kind}>.`);
@@ -65,7 +65,7 @@ export class Parser {
 
     parse() {
         const expression = this.#parseExpression();
-        const endOfFileToken = this.#match(SyntaxKind.EndOfFileToken);
+        const endOfFileToken = this.#matchToken(SyntaxKind.EndOfFileToken);
 
         return new SyntaxTree(this.#diagnostics, expression, endOfFileToken);
     };
@@ -78,7 +78,7 @@ export class Parser {
         let left = this.#parseFactor();
 
         while (this.#current.kind === SyntaxKind.PlusToken || this.#current.kind === SyntaxKind.MinusToken) {
-            const operatorToken = this.#match(this.#current.kind);
+            const operatorToken = this.#matchToken(this.#current.kind);
             const right = this.#parseFactor();
             left = new BinaryExpressionSyntax(left, operatorToken, right);
         };
@@ -90,7 +90,7 @@ export class Parser {
         let left = this.#parsePrimaryExpression();
 
         while (this.#current.kind === SyntaxKind.StarToken || this.#current.kind === SyntaxKind.SlashToken) {
-            const operatorToken = this.#match(this.#current.kind);
+            const operatorToken = this.#matchToken(this.#current.kind);
             const right = this.#parsePrimaryExpression();
             left = new BinaryExpressionSyntax(left, operatorToken, right);
         };
@@ -103,14 +103,14 @@ export class Parser {
      */
     #parsePrimaryExpression() {
         if (this.#current.kind === SyntaxKind.OpenParenthesisToken) {
-            const openParenthesisToken = this.#match(SyntaxKind.OpenParenthesisToken);
+            const openParenthesisToken = this.#matchToken(SyntaxKind.OpenParenthesisToken);
             const expression = this.#parseExpression();
-            const closeParenthesisToken = this.#match(SyntaxKind.CloseParenthesisToken);
+            const closeParenthesisToken = this.#matchToken(SyntaxKind.CloseParenthesisToken);
 
             return new ParenthesizedExpressionSyntax(openParenthesisToken, expression, closeParenthesisToken);
         };
 
-        const numberToken = this.#match(SyntaxKind.NumberToken);
-        return new NumberExpressionSyntax(numberToken);
+        const numberToken = this.#matchToken(SyntaxKind.NumberToken);
+        return new LiteralExpressionSyntax(numberToken);
     };
 };

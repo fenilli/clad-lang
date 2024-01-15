@@ -5,17 +5,22 @@
 */
 export const SyntaxKind = {
     // Tokens:
-    NumberToken: 'NumberToken',
+    BadToken: 'BadToken',
+    EndOfFileToken: 'EndOfFileToken',
     WhitespaceToken: 'WhitespaceToken',
+
+    NumberToken: 'NumberToken',
+
     PlusToken: 'PlusToken',
     MinusToken: 'MinusToken',
     StarToken: 'StarToken',
     SlashToken: 'SlashToken',
+
     OpenParenthesisToken: 'OpenParenthesisToken',
     CloseParenthesisToken: 'CloseParenthesisToken',
-    BadToken: 'BadToken',
-    EndOfFileToken: 'EndOfFileToken',
-    NumberExpression: 'NumberExpression',
+
+    // Expressions:
     BinaryExpression: 'BinaryExpression',
     ParenthesizedExpression: 'ParenthesizedExpression',
+    LiteralExpression: 'LiteralExpression',
 };

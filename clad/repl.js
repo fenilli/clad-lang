@@ -47,8 +47,7 @@ function processInput() {
         const { root, diagnostics } = SyntaxTree.parse(line);
 
         if (debug) {
-            process.stdout.write('\x1b[38;2;127;127;127m');
-            console.log('│');
+            process.stdout.write('\x1b[38;2;127;127;127m│\n');
             prettyPrint(root);
             process.stdout.write('\x1b[0m');
         };
@@ -57,18 +56,15 @@ function processInput() {
             const evaluator = new Evaluator(root);
             const result = evaluator.evaluate();
 
-            process.stdout.write(`\x1b[38;2;255;255;0m${result}\x1b[0m`);
-            console.log();
+            process.stdout.write(`\x1b[38;2;255;255;0m${result}\x1b[0m\n`);
         } else {
-            console.log();
-            process.stdout.write('\x1b[38;2;255;0;0m');
+            process.stdout.write('\n\x1b[38;2;255;0;0m');
 
             for (const diagnostic of diagnostics) {
                 console.log(diagnostic);
             };
 
-            process.stdout.write('\x1b[0m');
-            console.log();
+            process.stdout.write('\x1b[0m\n');
         };
 
         processInput();
