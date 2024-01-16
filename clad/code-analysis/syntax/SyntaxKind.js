@@ -17,6 +17,7 @@ export const SyntaxKind = {
     StarToken: 'StarToken',
     SlashToken: 'SlashToken',
     BangToken: 'BangToken',
+    EqualsToken: 'EqualsToken',
     AmpersandAmpersandToken: 'AmpersandAmpersandToken',
     PipePipeToken: 'PipePipeToken',
     EqualsEqualsToken: 'EqualsEqualsToken',
@@ -32,6 +33,8 @@ export const SyntaxKind = {
     // Expressions:
     UnaryExpression: 'UnaryExpression',
     BinaryExpression: 'BinaryExpression',
+    AssignmentExpression: 'AssignmentExpression',
     ParenthesizedExpression: 'ParenthesizedExpression',
+    NameExpression: 'NameExpression',
     LiteralExpression: 'LiteralExpression',
 };

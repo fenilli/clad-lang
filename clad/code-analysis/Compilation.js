@@ -12,15 +12,18 @@ export class Compilation {
         this.#syntax = syntax;
     };
 
-    evaluate() {
-        const binder = new Binder();
+    /**
+     * @param {Record<string, any>} variables
+     */
+    evaluate(variables) {
+        const binder = new Binder(variables);
         const boundExpression = binder.bindExpression(this.#syntax.root);
 
         const diagnostics = this.#syntax.diagnostics.concat(binder.diagnostics);
 
         if (diagnostics.length > 0) return new EvaluationResult(diagnostics, null);
 
-        const evaluator = new Evaluator(boundExpression);
+        const evaluator = new Evaluator(boundExpression, variables);
         const value = evaluator.evaluate();
 
         return new EvaluationResult(diagnostics, value);

@@ -32,6 +32,7 @@ function prettyPrint(node, indent = '', isLast = true) {
 };
 
 let debug = false;
+const variables = {};
 
 function processInput() {
     rl.question('> ', (line) => {
@@ -47,7 +48,7 @@ function processInput() {
 
         const syntaxTree = SyntaxTree.parse(line);
         const compilation = new Compilation(syntaxTree);
-        const { diagnostics, value } = compilation.evaluate();
+        const { diagnostics, value } = compilation.evaluate(variables);
 
         if (debug) {
             process.stdout.write('\x1b[38;2;127;127;127m│\n');

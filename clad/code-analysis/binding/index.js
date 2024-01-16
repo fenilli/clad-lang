@@ -10,4 +10,6 @@ export { BoundNode } from './BoundNode.js';
 export { BoundExpression } from './BoundExpression.js';
 export { BoundUnaryExpression } from './BoundUnaryExpression.js';
 export { BoundBinaryExpression } from './BoundBinaryExpression.js';
+export { BoundAssignmentExpression } from './BoundAssignmentExpression.js';
+export { BoundNameExpression } from './BoundNameExpression.js';
 export { BoundLiteralExpression } from './BoundLiteralExpression.js';

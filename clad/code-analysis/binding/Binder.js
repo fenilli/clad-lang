@@ -4,13 +4,24 @@ import {
     BoundUnaryOperator,
     BoundBinaryOperator,
     BoundUnaryExpression,
-    BoundBinaryExpression,
     BoundLiteralExpression,
+    BoundAssignmentExpression,
+    BoundNameExpression,
+    BoundBinaryExpression,
 } from './index.js';
 
 export class Binder {
+    #variables;
+
     /** @type {DiagnosticBag} */
     #diagnostics = new DiagnosticBag();
+
+    /**
+     * @param {Record<string, any>} variables
+     */
+    constructor(variables) {
+        this.#variables = variables;
+    };
 
     get diagnostics() {
         return this.#diagnostics;
@@ -26,7 +37,9 @@ export class Binder {
         switch (syntax.kind) {
             case SyntaxKind.UnaryExpression: return this.#bindUnaryExpression(/** @type {import('../syntax/index.js').UnaryExpressionSyntax} */(syntax));
             case SyntaxKind.BinaryExpression: return this.#bindBinaryExpression(/** @type {import('../syntax/index.js').BinaryExpressionSyntax} */(syntax));
+            case SyntaxKind.AssignmentExpression: return this.#bindAssignmentExpression(/** @type {import('../syntax/index.js').AssignmentExpressionSyntax} */(syntax));
             case SyntaxKind.ParenthesizedExpression: return this.#bindParenthesizedExpression(/** @type {import('../syntax/index.js').ParenthesizedExpressionSyntax} */(syntax));
+            case SyntaxKind.NameExpression: return this.#bindNameExpression(/** @type {import('../syntax/index.js').NameExpressionSyntax} */(syntax));
             case SyntaxKind.LiteralExpression: return this.#bindLiteralExpression(/** @type {import('../syntax/index.js').LiteralExpressionSyntax} */(syntax));
             default: throw new Error(`Unexpected syntax <${syntax.kind}>`);
         };
@@ -45,6 +58,16 @@ export class Binder {
         };
 
         return new BoundUnaryExpression(boundOperator, boundOperand);
+    };
+
+    /**
+     * @param {import('../syntax/index.js').AssignmentExpressionSyntax} syntax
+     */
+    #bindAssignmentExpression(syntax) {
+        const name = syntax.identifierToken.text;
+        const boundExpression = this.bindExpression(syntax.expression);
+
+        return new BoundAssignmentExpression(name, boundExpression);
     };
 
     /**
@@ -68,6 +91,22 @@ export class Binder {
      */
     #bindParenthesizedExpression(syntax) {
         return this.bindExpression(syntax.expression);
+    };
+
+    /**
+     * @param {import('../syntax/index.js').NameExpressionSyntax} syntax
+     */
+    #bindNameExpression(syntax) {
+        const name = syntax.identifierToken.text;
+        const variable = this.#variables[name];
+
+        if (typeof variable === 'undefined') {
+            this.#diagnostics.reportUndefinedName(syntax.identifierToken.span, name);
+            return new BoundLiteralExpression(0);
+        };
+
+        const type = typeof variable;
+        return new BoundNameExpression(name, type);
     };
 
     /**

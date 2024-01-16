@@ -3,17 +3,22 @@ import {
     BoundBinaryOperatorKind,
     BoundUnaryExpression,
     BoundBinaryExpression,
+    BoundAssignmentExpression,
+    BoundNameExpression,
     BoundLiteralExpression,
 } from './binding/index.js';
 
 export class Evaluator {
+    #variables;
     #root;
 
     /**
      * @param {import('./binding/index.js').BoundExpression} root
+     * @param {Record<string, any>} variables
      */
-    constructor(root) {
+    constructor(root, variables) {
         this.#root = root;
+        this.#variables = variables;
     };
 
     evaluate() {
@@ -51,6 +56,17 @@ export class Evaluator {
                 default: throw new Error(`Unexpected binary operator <${node.operator.kind}>`);
             };
         };
+
+        if (node instanceof BoundAssignmentExpression) {
+            const value = this.#evaluateExpression(node.expression);
+            console.log(node.name);
+            this.#variables[node.name] = value;
+
+            return value;
+        };
+
+        if (node instanceof BoundNameExpression)
+            return this.#variables[node.name];
 
         if (node instanceof BoundLiteralExpression)
             return node.value;

@@ -145,7 +145,7 @@ export class Lexer {
                     return new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, '==', null);
                 };
 
-                break;
+                return new SyntaxToken(SyntaxKind.EqualsToken, this.#position++, '=', null);
             }
             case '!': {
                 const start = this.#position;

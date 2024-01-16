@@ -10,5 +10,7 @@ export { SyntaxTree } from './SyntaxTree.js';
 export { ExpressionSyntax } from './ExpressionSyntax.js';
 export { UnaryExpressionSyntax } from './UnaryExpressionSyntax.js';
 export { BinaryExpressionSyntax } from './BinaryExpressionSyntax.js';
+export { AssignmentExpressionSyntax } from './AssignmentExpressionSyntax.js';
 export { ParenthesizedExpressionSyntax } from './ParenthesizedExpressionSyntax.js';
+export { NameExpressionSyntax } from './NameExpressionSyntax.js';
 export { LiteralExpressionSyntax } from './LiteralExpressionSyntax.js';

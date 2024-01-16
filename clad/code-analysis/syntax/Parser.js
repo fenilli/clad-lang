@@ -7,7 +7,9 @@ import {
     SyntaxTree,
     UnaryExpressionSyntax,
     BinaryExpressionSyntax,
+    AssignmentExpressionSyntax,
     ParenthesizedExpressionSyntax,
+    NameExpressionSyntax,
     LiteralExpressionSyntax,
 } from './index.js';
 
@@ -77,13 +79,29 @@ export class Parser {
         return new SyntaxTree(this.#diagnostics, expression, endOfFileToken);
     };
 
-    #parseExpression(parentPrecedence = 0) {
+    #parseExpression() {
+        return this.#parseAssignmentExpression();
+    };
+
+    #parseAssignmentExpression() {
+        if (this.#peek(0).kind === SyntaxKind.IdentifierToken && this.#peek(1).kind === SyntaxKind.EqualsToken) {
+            const IdentifierToken = this.#matchToken(SyntaxKind.IdentifierToken);
+            const operatorToken = this.#matchToken(SyntaxKind.EqualsToken);
+            const expression = this.#parseAssignmentExpression();
+
+            return new AssignmentExpressionSyntax(IdentifierToken, operatorToken, expression);
+        };
+
+        return this.#parseBinaryExpression();
+    };
+
+    #parseBinaryExpression(parentPrecedence = 0) {
         let left;
         const precedence = SyntaxFacts.getUnaryOperatorPrecedence(this.#current.kind);
 
         if (precedence !== 0 && precedence >= parentPrecedence) {
             const operatorToken = this.#matchToken(this.#current.kind);
-            const operand = this.#parseExpression(precedence);
+            const operand = this.#parseBinaryExpression(precedence);
 
             left = new UnaryExpressionSyntax(operatorToken, operand);
         } else {
@@ -95,7 +113,7 @@ export class Parser {
             if (precedence === 0 || precedence <= parentPrecedence) break;
 
             const operatorToken = this.#matchToken(this.#current.kind);
-            const right = this.#parseExpression(precedence);
+            const right = this.#parseBinaryExpression(precedence);
             left = new BinaryExpressionSyntax(left, operatorToken, right);
         };
 
@@ -121,6 +139,12 @@ export class Parser {
                 const value = keywordToken.kind === SyntaxKind.TrueKeyword;
 
                 return new LiteralExpressionSyntax(keywordToken, value);
+            }
+
+            case SyntaxKind.IdentifierToken: {
+                const identifierToken = this.#matchToken(SyntaxKind.IdentifierToken);
+
+                return new NameExpressionSyntax(identifierToken);
             }
 
             default: {

@@ -80,4 +80,13 @@ export class DiagnosticBag {
         const message = `Binary operator '${operatorText}' is not defined for types <${leftType}> and <${rightType}>.`;
         this.#report(span, message);
     };
+
+    /**
+     * @param {import('./TextSpan.js').TextSpan} span
+     * @param {string} name
+     */
+    reportUndefinedName(span, name) {
+        const message = `Variable '${name}' doesn't exist.`;
+        this.#report(span, message);
+    };
 };

@@ -6,5 +6,7 @@
 export const BoundNodeKind = {
     UnaryExpression: 'UnaryExpression',
     BinaryExpression: 'BinaryExpression',
+    AssignmentExpression: 'AssignmentExpression',
+    NameExpression: 'NameExpression',
     LiteralExpression: 'LiteralExpression',
 };
