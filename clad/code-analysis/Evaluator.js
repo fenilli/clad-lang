@@ -27,11 +27,11 @@ export class Evaluator {
         if (node instanceof BoundUnaryExpression) {
             const operand = this.#evaluateExpression(node.operand);
 
-            switch (node.operatorKind) {
+            switch (node.operator.kind) {
                 case BoundUnaryOperatorKind.Identity: return operand;
                 case BoundUnaryOperatorKind.Negation: return -operand;
                 case BoundUnaryOperatorKind.LogicalNegation: return !operand;
-                default: throw new Error(`Unexpected unary operator <${node.operatorKind}>`);
+                default: throw new Error(`Unexpected unary operator <${node.operator.kind}>`);
             };
         };
 
@@ -39,14 +39,14 @@ export class Evaluator {
             const left = this.#evaluateExpression(node.left);
             const right = this.#evaluateExpression(node.right);
 
-            switch (node.operatorKind) {
+            switch (node.operator.kind) {
                 case BoundBinaryOperatorKind.Addition: return left + right;
                 case BoundBinaryOperatorKind.Subtraction: return left - right;
                 case BoundBinaryOperatorKind.Multiplication: return left * right;
                 case BoundBinaryOperatorKind.Division: return left / right;
                 case BoundBinaryOperatorKind.LogicalAnd: return left && right;
                 case BoundBinaryOperatorKind.LogicalOr: return left || right;
-                default: throw new Error(`Unexpected binary operator <${node.operatorKind}>`);
+                default: throw new Error(`Unexpected binary operator <${node.operator.kind}>`);
             };
         };
 

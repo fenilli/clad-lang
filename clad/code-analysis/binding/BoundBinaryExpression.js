@@ -2,19 +2,19 @@ import { BoundNodeKind, BoundExpression } from './index.js';
 
 export class BoundBinaryExpression extends BoundExpression {
     left;
-    operatorKind;
+    operator;
     right;
 
     /**
      * @param {BoundExpression} left
-     * @param {import('./index.js').BoundBinaryOperatorKind} operatorKind
+     * @param {import('./index.js').BoundBinaryOperator} operator
      * @param {BoundExpression} right
      */
-    constructor(left, operatorKind, right) {
-        super(BoundNodeKind.BinaryExpression, left.type);
+    constructor(left, operator, right) {
+        super(BoundNodeKind.BinaryExpression, operator.resultType);
 
         this.left = left;
-        this.operatorKind = operatorKind;
+        this.operator = operator;
         this.right = right;
     };
 };

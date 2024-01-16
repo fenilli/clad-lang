@@ -1,17 +1,17 @@
 import { BoundNodeKind, BoundExpression } from './index.js';
 
 export class BoundUnaryExpression extends BoundExpression {
-    operatorKind;
+    operator;
     operand;
 
     /**
-     * @param {import('./index.js').BoundUnaryOperatorKind} operatorKind
+     * @param {import('./index.js').BoundUnaryOperator} operator
      * @param {BoundExpression} operand
      */
-    constructor(operatorKind, operand) {
-        super(BoundNodeKind.UnaryExpression, operand.type);
+    constructor(operator, operand) {
+        super(BoundNodeKind.UnaryExpression, operator.resultType);
 
-        this.operatorKind = operatorKind;
+        this.operator = operator;
         this.operand = operand;
     };
 };
