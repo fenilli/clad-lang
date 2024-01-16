@@ -2,6 +2,7 @@ import readline from 'node:readline';
 
 import { Evaluator } from './code-analysis/Evaluator.js';
 import { SyntaxToken, SyntaxTree } from './code-analysis/syntax/index.js';
+import { Binder } from './code-analysis/binding/Binder.js';
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -45,16 +46,19 @@ function processInput() {
             return processInput();
         };
 
-        const { root, diagnostics } = SyntaxTree.parse(line);
+        const syntaxTree = SyntaxTree.parse(line);
+        const binder = new Binder();
+        const boundExpression = binder.bindExpression(syntaxTree.root);
+        const diagnostics = syntaxTree.diagnostics.concat(binder.diagnostics);
 
         if (debug) {
             process.stdout.write('\x1b[38;2;127;127;127m│\n');
-            prettyPrint(root);
+            prettyPrint(syntaxTree.root);
             process.stdout.write('\x1b[0m');
         };
 
         if (diagnostics.length === 0) {
-            const evaluator = new Evaluator(root);
+            const evaluator = new Evaluator(boundExpression);
             const result = evaluator.evaluate();
 
             process.stdout.write(`\x1b[38;2;255;255;0m${result}\x1b[0m\n`);

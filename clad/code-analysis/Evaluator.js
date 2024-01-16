@@ -1,16 +1,16 @@
 import {
-    SyntaxKind,
-    UnaryExpressionSyntax,
-    BinaryExpressionSyntax,
-    ParenthesizedExpressionSyntax,
-    LiteralExpressionSyntax,
-} from './syntax/index.js';
+    BoundUnaryOperatorKind,
+    BoundBinaryOperatorKind,
+    BoundUnaryExpression,
+    BoundBinaryExpression,
+    BoundLiteralExpression,
+} from './binding/index.js';
 
 export class Evaluator {
     #root;
 
     /**
-     * @param {import('./syntax/index.js').ExpressionSyntax} root
+     * @param {import('./binding/index.js').BoundExpression} root
      */
     constructor(root) {
         this.#root = root;
@@ -21,39 +21,34 @@ export class Evaluator {
     };
 
     /**
-     * @param {import('./syntax/index.js').ExpressionSyntax} node
+     * @param {import('./binding/index.js').BoundExpression} node
      */
     #evaluateExpression(node) {
-        if (node instanceof UnaryExpressionSyntax) {
+        if (node instanceof BoundUnaryExpression) {
             const operand = this.#evaluateExpression(node.operand);
 
-            if (node.operatorToken.kind === SyntaxKind.PlusToken)
-                return operand;
-            else if (node.operatorToken.kind === SyntaxKind.MinusToken)
-                return -operand;
-            else throw new Error(`Unexpected unary operator <${node.operatorToken.kind}>`);
+            switch (node.operatorKind) {
+                case BoundUnaryOperatorKind.Identity: return operand;
+                case BoundUnaryOperatorKind.Negation: return -operand;
+                default: throw new Error(`Unexpected unary operator <${node.operatorKind}>`);
+            };
         };
 
-        if (node instanceof BinaryExpressionSyntax) {
+        if (node instanceof BoundBinaryExpression) {
             const left = this.#evaluateExpression(node.left);
             const right = this.#evaluateExpression(node.right);
 
-            if (node.operatorToken.kind === SyntaxKind.PlusToken)
-                return left + right;
-            else if (node.operatorToken.kind === SyntaxKind.MinusToken)
-                return left - right;
-            else if (node.operatorToken.kind === SyntaxKind.StarToken)
-                return left * right;
-            else if (node.operatorToken.kind === SyntaxKind.SlashToken)
-                return left / right;
-            else throw new Error(`Unexpected binary operator <${node.operatorToken.kind}>`);
+            switch (node.operatorKind) {
+                case BoundBinaryOperatorKind.Addition: return left + right;
+                case BoundBinaryOperatorKind.Subtraction: return left - right;
+                case BoundBinaryOperatorKind.Multiplication: return left * right;
+                case BoundBinaryOperatorKind.Division: return left / right;
+                default: throw new Error(`Unexpected binary operator <${node.operatorKind}>`);
+            };
         };
 
-        if (node instanceof ParenthesizedExpressionSyntax)
-            return this.#evaluateExpression(node.expression);
-
-        if (node instanceof LiteralExpressionSyntax)
-            return node.literalToken.value;
+        if (node instanceof BoundLiteralExpression)
+            return node.value;
 
         throw new Error(`Unexpected node <${node.kind}>`);
     };
