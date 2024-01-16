@@ -101,15 +101,27 @@ export class Parser {
      * @returns {import('./index.js').ExpressionSyntax}
      */
     #parsePrimaryExpression() {
-        if (this.#current.kind === SyntaxKind.OpenParenthesisToken) {
-            const openParenthesisToken = this.#matchToken(SyntaxKind.OpenParenthesisToken);
-            const expression = this.#parseExpression();
-            const closeParenthesisToken = this.#matchToken(SyntaxKind.CloseParenthesisToken);
+        switch (this.#current.kind) {
+            case SyntaxKind.OpenParenthesisToken: {
+                const openParenthesisToken = this.#matchToken(SyntaxKind.OpenParenthesisToken);
+                const expression = this.#parseExpression();
+                const closeParenthesisToken = this.#matchToken(SyntaxKind.CloseParenthesisToken);
 
-            return new ParenthesizedExpressionSyntax(openParenthesisToken, expression, closeParenthesisToken);
+                return new ParenthesizedExpressionSyntax(openParenthesisToken, expression, closeParenthesisToken);
+            }
+
+            case SyntaxKind.FalseKeyword:
+            case SyntaxKind.TrueKeyword: {
+                const keywordToken = this.#matchToken(this.#current.kind);
+                const value = keywordToken.kind === SyntaxKind.TrueKeyword;
+
+                return new LiteralExpressionSyntax(keywordToken, value);
+            }
+
+            default: {
+                const numberToken = this.#matchToken(SyntaxKind.NumberToken);
+                return new LiteralExpressionSyntax(numberToken);
+            }
         };
-
-        const numberToken = this.#matchToken(SyntaxKind.NumberToken);
-        return new LiteralExpressionSyntax(numberToken);
     };
 };

@@ -10,6 +10,7 @@ export const SyntaxKind = {
     WhitespaceToken: 'WhitespaceToken',
 
     NumberToken: 'NumberToken',
+    IdentifierToken: 'IdentifierToken',
 
     PlusToken: 'PlusToken',
     MinusToken: 'MinusToken',
@@ -18,6 +19,10 @@ export const SyntaxKind = {
 
     OpenParenthesisToken: 'OpenParenthesisToken',
     CloseParenthesisToken: 'CloseParenthesisToken',
+
+    // Keywords:
+    FalseKeyword: 'FalseKeyword',
+    TrueKeyword: 'TrueKeyword',
 
     // Expressions:
     UnaryExpression: 'UnaryExpression',

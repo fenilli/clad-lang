@@ -1,4 +1,4 @@
-import { SyntaxKind, SyntaxToken } from './index.js';
+import { SyntaxFacts, SyntaxKind, SyntaxToken } from './index.js';
 
 /**
  * @param {string} string
@@ -16,6 +16,15 @@ function isNumber(string) {
  */
 function isWhitespace(string) {
     return /\s/.test(string);
+};
+
+/**
+ * @param {string} string 
+ * 
+ * @returns {boolean}
+ */
+function isLetter(string) {
+    return /\w/.test(string);
 };
 
 export class Lexer {
@@ -75,6 +84,16 @@ export class Lexer {
             const text = this.#text.slice(start, this.#position);
 
             return new SyntaxToken(SyntaxKind.WhitespaceToken, start, text, null);
+        };
+
+        if (isLetter(this.#current)) {
+            const start = this.#position;
+
+            while (isLetter(this.#current)) this.#next();
+
+            const text = this.#text.slice(start, this.#position);
+            const kind = SyntaxFacts.getKeywordKind(text);
+            return new SyntaxToken(kind, start, text, null);
         };
 
         switch (this.#current) {

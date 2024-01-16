@@ -38,7 +38,7 @@ export class Binder {
         const boundOperatorKind = this.#bindUnaryOperatorKind(syntax.operatorToken.kind, boundOperand.type);
 
         if (boundOperatorKind === null) {
-            this.#diagnostics.push(`Unary operator <${syntax.operatorToken.kind}> is not defined for type <${boundOperand.type}>.`);
+            this.#diagnostics.push(`Unary operator '${syntax.operatorToken.text}' is not defined for type <${boundOperand.type}>.`);
 
             return boundOperand;
         };
@@ -72,7 +72,7 @@ export class Binder {
         const boundOperatorKind = this.#bindBinaryOperatorKind(syntax.operatorToken.kind, boundLeft.type, boundRight.type);
 
         if (boundOperatorKind === null) {
-            this.#diagnostics.push(`Binary operator <${syntax.operatorToken.kind}> is not defined for types <${boundLeft.type}> and <${boundRight.type}>.`);
+            this.#diagnostics.push(`Binary operator '${syntax.operatorToken.text}' is not defined for types <${boundLeft.type}> and <${boundRight.type}>.`);
 
             return boundLeft;
         };
@@ -104,7 +104,7 @@ export class Binder {
      * @param {import('../syntax/index.js').LiteralExpressionSyntax} syntax
      */
     #bindLiteralExpression(syntax) {
-        const value = syntax.literalToken.value || 0;
+        const value = syntax.value ?? 0;
 
         return new BoundLiteralExpression(value);
     };
