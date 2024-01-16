@@ -115,20 +115,29 @@ export class Lexer {
             case '/': return new SyntaxToken(SyntaxKind.SlashToken, this.#position++, '/', null);
             case '(': return new SyntaxToken(SyntaxKind.OpenParenthesisToken, this.#position++, '(', null);
             case ')': return new SyntaxToken(SyntaxKind.CloseParenthesisToken, this.#position++, ')', null);
-            case '!': return new SyntaxToken(SyntaxKind.BangToken, this.#position++, '!', null);
             case '&': {
-                if (this.#lookahead === '&') {
+                if (this.#lookahead === '&')
                     return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, this.#position += 2, '&&', null);
-                };
 
                 break;
             }
             case '|': {
-                if (this.#lookahead === '|') {
+                if (this.#lookahead === '|')
                     return new SyntaxToken(SyntaxKind.PipePipeToken, this.#position += 2, '&&', null);
-                };
 
                 break;
+            }
+            case '=': {
+                if (this.#lookahead === '=')
+                    return new SyntaxToken(SyntaxKind.EqualsEqualsToken, this.#position += 2, '==', null);
+
+                break;
+            }
+            case '!': {
+                if (this.#lookahead === '=')
+                    return new SyntaxToken(SyntaxKind.BangEqualsToken, this.#position += 2, '!=', null);
+
+                return new SyntaxToken(SyntaxKind.BangToken, this.#position++, '!', null);
             }
         };
 

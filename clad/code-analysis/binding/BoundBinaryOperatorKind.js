@@ -9,6 +9,9 @@ export const BoundBinaryOperatorKind = {
     Multiplication: 'Multiplication',
     Division: 'Division',
 
+    Equals: 'Equals',
+    NotEquals: 'NotEquals',
+
     LogicalAnd: 'LogicalAnd',
     LogicalOr: 'LogicalOr',
 };

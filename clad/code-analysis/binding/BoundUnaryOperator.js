@@ -5,19 +5,19 @@ export class BoundUnaryOperator {
     syntaxKind;
     kind;
     operandType;
-    resultType;
+    type;
 
     /**
      * @param {SyntaxKind} syntaxKind
      * @param {BoundUnaryOperatorKind} kind
      * @param {string} operandType
-     * @param {string} [resultType]
+     * @param {string} [type]
      */
-    constructor(syntaxKind, kind, operandType, resultType) {
+    constructor(syntaxKind, kind, operandType, type) {
         this.syntaxKind = syntaxKind;
         this.kind = kind;
         this.operandType = operandType;
-        this.resultType = typeof resultType !== 'undefined' ? resultType : operandType;
+        this.type = typeof type !== 'undefined' ? type : operandType;
     };
 
     /**

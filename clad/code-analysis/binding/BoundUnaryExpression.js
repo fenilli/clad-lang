@@ -9,7 +9,7 @@ export class BoundUnaryExpression extends BoundExpression {
      * @param {BoundExpression} operand
      */
     constructor(operator, operand) {
-        super(BoundNodeKind.UnaryExpression, operator.resultType);
+        super(BoundNodeKind.UnaryExpression, operator.type);
 
         this.operator = operator;
         this.operand = operand;

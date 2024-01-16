@@ -11,7 +11,7 @@ export class BoundBinaryExpression extends BoundExpression {
      * @param {BoundExpression} right
      */
     constructor(left, operator, right) {
-        super(BoundNodeKind.BinaryExpression, operator.resultType);
+        super(BoundNodeKind.BinaryExpression, operator.type);
 
         this.left = left;
         this.operator = operator;

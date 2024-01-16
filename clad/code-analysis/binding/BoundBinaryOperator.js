@@ -6,21 +6,27 @@ export class BoundBinaryOperator {
     kind;
     leftType;
     rightType;
-    resultType;
+    type;
 
     /**
      * @param {SyntaxKind} syntaxKind
      * @param {BoundBinaryOperatorKind} kind
-     * @param {string} leftType
-     * @param {string} [rightType]
-     * @param {string} [resultType]
+     * @param {string} typeOrLeftType
+     * @param {string} [rightTypeOrResultType]
+     * @param {string} [type]
      */
-    constructor(syntaxKind, kind, leftType, rightType, resultType) {
+    constructor(syntaxKind, kind, typeOrLeftType, rightTypeOrResultType, type) {
         this.syntaxKind = syntaxKind;
         this.kind = kind;
-        this.leftType = leftType;
-        this.rightType = typeof rightType !== 'undefined' ? rightType : leftType;
-        this.resultType = typeof resultType !== 'undefined' ? resultType : leftType;
+        this.leftType = typeOrLeftType;
+        this.rightType = typeof type !== 'undefined'
+            ? rightTypeOrResultType
+            : typeOrLeftType;
+        this.type = typeof type === 'undefined'
+            ? typeof rightTypeOrResultType !== 'undefined'
+                ? rightTypeOrResultType
+                : typeOrLeftType
+            : type;
     };
 
     /**
@@ -32,9 +38,13 @@ export class BoundBinaryOperator {
             new BoundBinaryOperator(SyntaxKind.MinusToken, BoundBinaryOperatorKind.Subtraction, 'number'),
             new BoundBinaryOperator(SyntaxKind.StarToken, BoundBinaryOperatorKind.Multiplication, 'number'),
             new BoundBinaryOperator(SyntaxKind.SlashToken, BoundBinaryOperatorKind.Division, 'number'),
+            new BoundBinaryOperator(SyntaxKind.EqualsEqualsToken, BoundBinaryOperatorKind.Equals, 'number', 'boolean'),
+            new BoundBinaryOperator(SyntaxKind.BangEqualsToken, BoundBinaryOperatorKind.NotEquals, 'number', 'boolean'),
 
             new BoundBinaryOperator(SyntaxKind.AmpersandAmpersandToken, BoundBinaryOperatorKind.LogicalAnd, 'boolean'),
             new BoundBinaryOperator(SyntaxKind.PipePipeToken, BoundBinaryOperatorKind.LogicalOr, 'boolean'),
+            new BoundBinaryOperator(SyntaxKind.EqualsEqualsToken, BoundBinaryOperatorKind.Equals, 'boolean'),
+            new BoundBinaryOperator(SyntaxKind.BangEqualsToken, BoundBinaryOperatorKind.NotEquals, 'boolean'),
         ];
     };
 

@@ -19,6 +19,8 @@ export const SyntaxKind = {
     BangToken: 'BangToken',
     AmpersandAmpersandToken: 'AmpersandAmpersandToken',
     PipePipeToken: 'PipePipeToken',
+    EqualsEqualsToken: 'EqualsEqualsToken',
+    BangEqualsToken: 'BangEqualsToken',
 
     OpenParenthesisToken: 'OpenParenthesisToken',
     CloseParenthesisToken: 'CloseParenthesisToken',

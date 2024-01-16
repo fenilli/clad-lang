@@ -46,6 +46,8 @@ export class Evaluator {
                 case BoundBinaryOperatorKind.Division: return left / right;
                 case BoundBinaryOperatorKind.LogicalAnd: return left && right;
                 case BoundBinaryOperatorKind.LogicalOr: return left || right;
+                case BoundBinaryOperatorKind.Equals: return left === right;
+                case BoundBinaryOperatorKind.NotEquals: return left !== right;
                 default: throw new Error(`Unexpected binary operator <${node.operator.kind}>`);
             };
         };
