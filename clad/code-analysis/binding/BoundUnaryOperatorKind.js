@@ -6,4 +6,5 @@
 export const BoundUnaryOperatorKind = {
     Identity: 'Identity',
     Negation: 'Negation',
+    LogicalNegation: 'LogicalNegation',
 };

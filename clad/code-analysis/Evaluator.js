@@ -30,6 +30,7 @@ export class Evaluator {
             switch (node.operatorKind) {
                 case BoundUnaryOperatorKind.Identity: return operand;
                 case BoundUnaryOperatorKind.Negation: return -operand;
+                case BoundUnaryOperatorKind.LogicalNegation: return !operand;
                 default: throw new Error(`Unexpected unary operator <${node.operatorKind}>`);
             };
         };
@@ -43,6 +44,8 @@ export class Evaluator {
                 case BoundBinaryOperatorKind.Subtraction: return left - right;
                 case BoundBinaryOperatorKind.Multiplication: return left * right;
                 case BoundBinaryOperatorKind.Division: return left / right;
+                case BoundBinaryOperatorKind.LogicalAnd: return left && right;
+                case BoundBinaryOperatorKind.LogicalOr: return left || right;
                 default: throw new Error(`Unexpected binary operator <${node.operatorKind}>`);
             };
         };

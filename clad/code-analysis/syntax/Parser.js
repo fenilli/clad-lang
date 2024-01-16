@@ -32,7 +32,7 @@ export class Parser {
                 this.#tokens.push(token);
         } while (token.kind !== SyntaxKind.EndOfFileToken);
 
-        this.#diagnostics.concat(lexer.diagnostics);
+        this.#diagnostics = this.#diagnostics.concat(lexer.diagnostics);
     };
 
     /**

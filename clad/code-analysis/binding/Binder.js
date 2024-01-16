@@ -53,14 +53,18 @@ export class Binder {
      * @returns {BoundUnaryOperatorKind | null}
      */
     #bindUnaryOperatorKind(kind, operandType) {
-        if (operandType !== 'number')
-            return null
+        if (operandType === 'number')
+            switch (kind) {
+                case SyntaxKind.PlusToken: return BoundUnaryOperatorKind.Identity;
+                case SyntaxKind.MinusToken: return BoundUnaryOperatorKind.Negation;
+            };
 
-        switch (kind) {
-            case SyntaxKind.PlusToken: return BoundUnaryOperatorKind.Identity;
-            case SyntaxKind.MinusToken: return BoundUnaryOperatorKind.Negation;
-            default: throw new Error(`Unexpected unary operator <${kind}>.`);
-        };
+        if (operandType === 'boolean')
+            switch (kind) {
+                case SyntaxKind.BangToken: return BoundUnaryOperatorKind.LogicalNegation;
+            };
+
+        return null;
     };
 
     /**
@@ -88,16 +92,21 @@ export class Binder {
      * @returns {BoundBinaryOperatorKind | null}
      */
     #bindBinaryOperatorKind(kind, leftType, rightType) {
-        if (leftType !== 'number' || rightType !== 'number')
-            return null;
+        if (leftType === 'number' && rightType === 'number')
+            switch (kind) {
+                case SyntaxKind.PlusToken: return BoundBinaryOperatorKind.Addition;
+                case SyntaxKind.MinusToken: return BoundBinaryOperatorKind.Subtraction;
+                case SyntaxKind.StarToken: return BoundBinaryOperatorKind.Multiplication;
+                case SyntaxKind.SlashToken: return BoundBinaryOperatorKind.Division;
+            };
 
-        switch (kind) {
-            case SyntaxKind.PlusToken: return BoundBinaryOperatorKind.Addition;
-            case SyntaxKind.MinusToken: return BoundBinaryOperatorKind.Subtraction;
-            case SyntaxKind.StarToken: return BoundBinaryOperatorKind.Multiplication;
-            case SyntaxKind.SlashToken: return BoundBinaryOperatorKind.Division;
-            default: throw new Error(`Unexpected binary operator <${kind}>.`);
-        };
+        if (leftType === 'boolean' && rightType === 'boolean')
+            switch (kind) {
+                case SyntaxKind.AmpersandAmpersandToken: return BoundBinaryOperatorKind.LogicalAnd;
+                case SyntaxKind.PipePipeToken: return BoundBinaryOperatorKind.LogicalOr;
+            };
+
+        return null
     };
 
     /**

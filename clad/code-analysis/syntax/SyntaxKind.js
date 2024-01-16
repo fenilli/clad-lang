@@ -16,6 +16,9 @@ export const SyntaxKind = {
     MinusToken: 'MinusToken',
     StarToken: 'StarToken',
     SlashToken: 'SlashToken',
+    BangToken: 'BangToken',
+    AmpersandAmpersandToken: 'AmpersandAmpersandToken',
+    PipePipeToken: 'PipePipeToken',
 
     OpenParenthesisToken: 'OpenParenthesisToken',
     CloseParenthesisToken: 'CloseParenthesisToken',

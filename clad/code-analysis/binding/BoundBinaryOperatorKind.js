@@ -8,4 +8,7 @@ export const BoundBinaryOperatorKind = {
     Subtraction: 'Subtraction',
     Multiplication: 'Multiplication',
     Division: 'Division',
+
+    LogicalAnd: 'LogicalAnd',
+    LogicalOr: 'LogicalOr',
 };

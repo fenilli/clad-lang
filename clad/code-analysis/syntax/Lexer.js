@@ -45,10 +45,22 @@ export class Lexer {
         return this.#diagnostics;
     };
 
-    get #current() {
-        if (this.#position >= this.#text.length) return '\0';
+    /**
+     * @param {number} offset
+     */
+    #peek(offset) {
+        const index = this.#position + offset;
+        if (index >= this.#text.length) return '\0';
 
-        return this.#text[this.#position];
+        return this.#text[index];
+    };
+
+    get #current() {
+        return this.#peek(0);
+    };
+
+    get #lookahead() {
+        return this.#peek(1);
     };
 
     #next() {
@@ -103,6 +115,21 @@ export class Lexer {
             case '/': return new SyntaxToken(SyntaxKind.SlashToken, this.#position++, '/', null);
             case '(': return new SyntaxToken(SyntaxKind.OpenParenthesisToken, this.#position++, '(', null);
             case ')': return new SyntaxToken(SyntaxKind.CloseParenthesisToken, this.#position++, ')', null);
+            case '!': return new SyntaxToken(SyntaxKind.BangToken, this.#position++, '!', null);
+            case '&': {
+                if (this.#lookahead === '&') {
+                    return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, this.#position += 2, '&&', null);
+                };
+
+                break;
+            }
+            case '|': {
+                if (this.#lookahead === '|') {
+                    return new SyntaxToken(SyntaxKind.PipePipeToken, this.#position += 2, '&&', null);
+                };
+
+                break;
+            }
         };
 
         const start = this.#position;
