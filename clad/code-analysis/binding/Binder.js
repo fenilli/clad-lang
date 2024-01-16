@@ -1,4 +1,5 @@
 import { DiagnosticBag } from '../DiagnosticBag.js';
+import { VariableSymbol } from '../VariableSymbol.js';
 import { SyntaxKind } from '../syntax/index.js';
 import {
     BoundUnaryOperator,
@@ -17,7 +18,7 @@ export class Binder {
     #diagnostics = new DiagnosticBag();
 
     /**
-     * @param {Record<string, any>} variables
+     * @param {Map<VariableSymbol, any>} variables
      */
     constructor(variables) {
         this.#variables = variables;
@@ -66,8 +67,14 @@ export class Binder {
     #bindAssignmentExpression(syntax) {
         const name = syntax.identifierToken.text;
         const boundExpression = this.bindExpression(syntax.expression);
+        const existingVariable = Array.from(this.#variables.keys()).find((v) => v.name === name);
+        if (typeof existingVariable !== 'undefined')
+            this.#variables.delete(existingVariable);
 
-        return new BoundAssignmentExpression(name, boundExpression);
+        const variable = new VariableSymbol(name, boundExpression.type);
+        this.#variables.set(variable, null);
+
+        return new BoundAssignmentExpression(variable, boundExpression);
     };
 
     /**
@@ -98,15 +105,14 @@ export class Binder {
      */
     #bindNameExpression(syntax) {
         const name = syntax.identifierToken.text;
-        const variable = this.#variables[name];
+        const variable = Array.from(this.#variables.keys()).find((v) => v.name === name);
 
         if (typeof variable === 'undefined') {
             this.#diagnostics.reportUndefinedName(syntax.identifierToken.span, name);
             return new BoundLiteralExpression(0);
         };
 
-        const type = typeof variable;
-        return new BoundNameExpression(name, type);
+        return new BoundNameExpression(variable);
     };
 
     /**

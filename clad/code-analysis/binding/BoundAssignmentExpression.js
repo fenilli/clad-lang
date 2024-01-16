@@ -1,17 +1,17 @@
 import { BoundNodeKind, BoundExpression } from './index.js';
 
 export class BoundAssignmentExpression extends BoundExpression {
-    name;
+    variable;
     expression;
 
     /**
-     * @param {string} name
+     * @param {import('../VariableSymbol.js').VariableSymbol} variable
      * @param {BoundExpression} expression
      */
-    constructor(name, expression) {
+    constructor(variable, expression) {
         super(BoundNodeKind.AssignmentExpression, expression.type);
 
-        this.name = name;
+        this.variable = variable;
         this.expression = expression;
     };
 };

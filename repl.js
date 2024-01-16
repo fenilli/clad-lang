@@ -32,7 +32,7 @@ function prettyPrint(node, indent = '', isLast = true) {
 };
 
 let debug = false;
-const variables = {};
+const variables = new Map();
 
 function processInput() {
     rl.question('> ', (line) => {

@@ -13,7 +13,7 @@ export class Compilation {
     };
 
     /**
-     * @param {Record<string, any>} variables
+     * @param {Map<import('./VariableSymbol.js').VariableSymbol, any>} variables
      */
     evaluate(variables) {
         const binder = new Binder(variables);

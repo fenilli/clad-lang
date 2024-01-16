@@ -14,7 +14,7 @@ export class Evaluator {
 
     /**
      * @param {import('./binding/index.js').BoundExpression} root
-     * @param {Record<string, any>} variables
+     * @param {Map<import('./VariableSymbol.js').VariableSymbol, any>} variables
      */
     constructor(root, variables) {
         this.#root = root;
@@ -59,14 +59,13 @@ export class Evaluator {
 
         if (node instanceof BoundAssignmentExpression) {
             const value = this.#evaluateExpression(node.expression);
-            console.log(node.name);
-            this.#variables[node.name] = value;
+            this.#variables.set(node.variable, value);
 
             return value;
         };
 
         if (node instanceof BoundNameExpression)
-            return this.#variables[node.name];
+            return this.#variables.get(node.variable);
 
         if (node instanceof BoundLiteralExpression)
             return node.value;
