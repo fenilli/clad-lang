@@ -1,3 +1,5 @@
+import { DiagnosticBag } from '../DiagnosticBag.js';
+import { TextSpan } from '../TextSpan.js';
 import { SyntaxFacts, SyntaxKind, SyntaxToken } from './index.js';
 
 /**
@@ -31,8 +33,8 @@ export class Lexer {
     #text = '';
     #position = 0;
 
-    /** @type {string[]} */
-    #diagnostics = [];
+    /** @type {DiagnosticBag} */
+    #diagnostics = new DiagnosticBag();
 
     /**
      * @param {string} text
@@ -82,7 +84,7 @@ export class Lexer {
             const value = parseInt(text);
 
             if (!value) {
-                this.#diagnostics.push(`The number ${text} isn't a valid number.`);
+                this.#diagnostics.reportInvalidNumber(new TextSpan(start, this.#position - start), text, 'number');
             };
 
             return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
@@ -116,26 +118,42 @@ export class Lexer {
             case '(': return new SyntaxToken(SyntaxKind.OpenParenthesisToken, this.#position++, '(', null);
             case ')': return new SyntaxToken(SyntaxKind.CloseParenthesisToken, this.#position++, ')', null);
             case '&': {
-                if (this.#lookahead === '&')
-                    return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, this.#position += 2, '&&', null);
+                const start = this.#position;
+
+                if (this.#lookahead === '&') {
+                    this.#position += 2;
+                    return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, start, '&&', null);
+                };
 
                 break;
             }
             case '|': {
-                if (this.#lookahead === '|')
-                    return new SyntaxToken(SyntaxKind.PipePipeToken, this.#position += 2, '&&', null);
+                const start = this.#position;
+
+                if (this.#lookahead === '|') {
+                    this.#position += 2;
+                    return new SyntaxToken(SyntaxKind.PipePipeToken, start, '||', null);
+                };
 
                 break;
             }
             case '=': {
-                if (this.#lookahead === '=')
-                    return new SyntaxToken(SyntaxKind.EqualsEqualsToken, this.#position += 2, '==', null);
+                const start = this.#position;
+
+                if (this.#lookahead === '=') {
+                    this.#position += 2;
+                    return new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, '==', null);
+                };
 
                 break;
             }
             case '!': {
-                if (this.#lookahead === '=')
-                    return new SyntaxToken(SyntaxKind.BangEqualsToken, this.#position += 2, '!=', null);
+                const start = this.#position;
+
+                if (this.#lookahead === '=') {
+                    this.#position += 2;
+                    return new SyntaxToken(SyntaxKind.BangEqualsToken, start, '!=', null);
+                };
 
                 return new SyntaxToken(SyntaxKind.BangToken, this.#position++, '!', null);
             }
@@ -145,7 +163,7 @@ export class Lexer {
         this.#next();
         const text = this.#text.slice(start, this.#position);
 
-        this.#diagnostics.push(`Bad character input: '${text}'.`);
+        this.#diagnostics.reportBadCharacter(new TextSpan(start, 1), text);
         return new SyntaxToken(SyntaxKind.BadToken, start, text, null);
     };
 };

@@ -1,3 +1,4 @@
+import { DiagnosticBag } from '../DiagnosticBag.js';
 import { SyntaxKind } from '../syntax/index.js';
 import {
     BoundUnaryOperator,
@@ -8,8 +9,8 @@ import {
 } from './index.js';
 
 export class Binder {
-    /** @type {string[]} */
-    #diagnostics = [];
+    /** @type {DiagnosticBag} */
+    #diagnostics = new DiagnosticBag();
 
     get diagnostics() {
         return this.#diagnostics;
@@ -39,8 +40,7 @@ export class Binder {
         const boundOperator = BoundUnaryOperator.bind(syntax.operatorToken.kind, boundOperand.type);
 
         if (boundOperator === null) {
-            this.#diagnostics.push(`Unary operator '${syntax.operatorToken.text}' is not defined for type <${boundOperand.type}>.`);
-
+            this.#diagnostics.reportUndefinedUnaryOperator(syntax.operatorToken.span, syntax.operatorToken.text, boundOperand.type);
             return boundOperand;
         };
 
@@ -56,8 +56,7 @@ export class Binder {
         const boundOperator = BoundBinaryOperator.bind(syntax.operatorToken.kind, boundLeft.type, boundRight.type);
 
         if (boundOperator === null) {
-            this.#diagnostics.push(`Binary operator '${syntax.operatorToken.text}' is not defined for types <${boundLeft.type}> and <${boundRight.type}>.`);
-
+            this.#diagnostics.reportUndefinedBinaryOperator(syntax.operatorToken.span, syntax.operatorToken.text, boundLeft.type, boundRight.type);
             return boundLeft;
         };
 

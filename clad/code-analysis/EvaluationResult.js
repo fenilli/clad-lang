@@ -1,10 +1,10 @@
 export class EvaluationResult {
-    /** @type {string[]} */
+    /** @type {import('./Diagnostic.js').Diagnostic[]} */
     #diagnostics = [];
     value;
 
     /**
-     * @param {string[]} diagnostics
+     * @param {import('./Diagnostic.js').Diagnostic[]} diagnostics
      * @param {any} value
      */
     constructor(diagnostics, value) {

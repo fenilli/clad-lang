@@ -1,3 +1,4 @@
+import { TextSpan } from '../TextSpan.js';
 import { SyntaxNode } from './index.js';
 
 export class SyntaxToken extends SyntaxNode {
@@ -17,5 +18,12 @@ export class SyntaxToken extends SyntaxNode {
         this.position = position;
         this.text = text;
         this.value = value;
+    };
+
+    /**
+     * @returns {TextSpan}
+     */
+    get span() {
+        return new TextSpan(this.position, this.text.length);
     };
 };

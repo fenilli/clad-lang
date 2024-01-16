@@ -58,13 +58,19 @@ function processInput() {
         if (diagnostics.length === 0) {
             process.stdout.write(`\x1b[38;2;255;255;0m${value}\x1b[0m\n`);
         } else {
-            process.stdout.write('\n\x1b[38;2;255;0;0m');
-
             for (const diagnostic of diagnostics) {
-                console.log(diagnostic);
-            };
+                process.stdout.write('\n\x1b[38;2;255;0;0m');
+                console.log(diagnostic.message);
+                process.stdout.write('\x1b[0m');
 
-            process.stdout.write('\x1b[0m\n');
+                const prefix = line.substring(0, diagnostic.span.start);
+                const error = line.substring(diagnostic.span.start, diagnostic.span.end);
+                const suffix = line.substring(diagnostic.span.end);
+
+                process.stdout.write(`   └─── ${prefix}`);
+                process.stdout.write(`\x1b[38;2;255;0;0m${error}`);
+                process.stdout.write(`\x1b[0m${suffix}\n`);
+            };
         };
 
         processInput();

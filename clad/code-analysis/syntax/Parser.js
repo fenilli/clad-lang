@@ -1,3 +1,4 @@
+import { DiagnosticBag } from '../DiagnosticBag.js';
 import {
     Lexer,
     SyntaxKind,
@@ -15,8 +16,8 @@ export class Parser {
     #tokens = [];
     #position = 0;
 
-    /** @type {string[]} */
-    #diagnostics = [];
+    /** @type {DiagnosticBag} */
+    #diagnostics = new DiagnosticBag();
 
     /**
      * @param {string} text
@@ -32,7 +33,11 @@ export class Parser {
                 this.#tokens.push(token);
         } while (token.kind !== SyntaxKind.EndOfFileToken);
 
-        this.#diagnostics = this.#diagnostics.concat(lexer.diagnostics);
+        this.#diagnostics.addRange(lexer.diagnostics);
+    };
+
+    get diagnostics() {
+        return this.#diagnostics;
     };
 
     /**
@@ -57,7 +62,7 @@ export class Parser {
     #matchToken(kind) {
         if (this.#current.kind === kind) return this.#nextToken();
 
-        this.#diagnostics.push(`Unexpected token <${this.#current.kind}>, expected <${kind}>.`);
+        this.#diagnostics.reportUnexpectedToken(this.#current.span, this.#current.kind, kind);
         return new SyntaxToken(kind, this.#current.position, '', null);
     };
 

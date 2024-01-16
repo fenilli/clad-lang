@@ -6,7 +6,7 @@ export class SyntaxTree {
     endOfFileToken;
 
     /**
-     * @param {string[]} diagnostics
+     * @param {import('../DiagnosticBag.js').DiagnosticBag} diagnostics
      * @param {import('./index.js').ExpressionSyntax} root
      * @param {import('./index.js').SyntaxToken} endOfFileToken
      */
