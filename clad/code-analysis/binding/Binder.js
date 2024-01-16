@@ -25,6 +25,7 @@ export class Binder {
         switch (syntax.kind) {
             case SyntaxKind.UnaryExpression: return this.#bindUnaryExpression(/** @type {import('../syntax/index.js').UnaryExpressionSyntax} */(syntax));
             case SyntaxKind.BinaryExpression: return this.#bindBinaryExpression(/** @type {import('../syntax/index.js').BinaryExpressionSyntax} */(syntax));
+            case SyntaxKind.ParenthesizedExpression: return this.#bindParenthesizedExpression(/** @type {import('../syntax/index.js').ParenthesizedExpressionSyntax} */(syntax));
             case SyntaxKind.LiteralExpression: return this.#bindLiteralExpression(/** @type {import('../syntax/index.js').LiteralExpressionSyntax} */(syntax));
             default: throw new Error(`Unexpected syntax <${syntax.kind}>`);
         };
@@ -61,6 +62,13 @@ export class Binder {
         };
 
         return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
+    };
+
+    /**
+     * @param {import('../syntax/index.js').ParenthesizedExpressionSyntax} syntax
+     */
+    #bindParenthesizedExpression(syntax) {
+        return this.bindExpression(syntax.expression);
     };
 
     /**

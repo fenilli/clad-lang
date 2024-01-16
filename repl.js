@@ -1,8 +1,7 @@
 import readline from 'node:readline';
 
-import { Evaluator } from './code-analysis/Evaluator.js';
-import { SyntaxToken, SyntaxTree } from './code-analysis/syntax/index.js';
-import { Binder } from './code-analysis/binding/Binder.js';
+import { Compilation } from './clad/code-analysis/Compilation.js';
+import { SyntaxToken, SyntaxTree } from './clad/code-analysis/syntax/index.js';
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -10,7 +9,7 @@ const rl = readline.createInterface({
 });
 
 /**
- * @param {import('./code-analysis/syntax/SyntaxNode.js').SyntaxNode} node
+ * @param {import('./clad/code-analysis/syntax/SyntaxNode.js').SyntaxNode} node
  * @param {string} indent
  * @param {boolean} isLast
  */
@@ -47,9 +46,8 @@ function processInput() {
         };
 
         const syntaxTree = SyntaxTree.parse(line);
-        const binder = new Binder();
-        const boundExpression = binder.bindExpression(syntaxTree.root);
-        const diagnostics = syntaxTree.diagnostics.concat(binder.diagnostics);
+        const compilation = new Compilation(syntaxTree);
+        const { diagnostics, value } = compilation.evaluate();
 
         if (debug) {
             process.stdout.write('\x1b[38;2;127;127;127m│\n');
@@ -58,10 +56,7 @@ function processInput() {
         };
 
         if (diagnostics.length === 0) {
-            const evaluator = new Evaluator(boundExpression);
-            const result = evaluator.evaluate();
-
-            process.stdout.write(`\x1b[38;2;255;255;0m${result}\x1b[0m\n`);
+            process.stdout.write(`\x1b[38;2;255;255;0m${value}\x1b[0m\n`);
         } else {
             process.stdout.write('\n\x1b[38;2;255;0;0m');
 

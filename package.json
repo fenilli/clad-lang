@@ -7,6 +7,6 @@
   "author": "Gustavo Fenilli <gustavofenilli@gmail.com> (https://github.com/fenilli)",
   "license": "MIT",
   "scripts": {
-    "repl": "node ./clad/repl.js"
+    "repl": "node ./repl.js"
   }
 }
