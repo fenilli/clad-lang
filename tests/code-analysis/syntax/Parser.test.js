@@ -45,16 +45,16 @@ const assertTree = (input) => {
         token: (expectedKind, expectedText, expectedValue) => {
             const token = /** @type {import('../../../clad/code-analysis/syntax/index.js').SyntaxToken} */ (current);
 
-            assert.equal(expectedKind, token.kind);
-            assert.equal(expectedText, token.text);
-            if (expectedValue) assert.equal(expectedValue, token.value);
+            assert.equal(token.kind, expectedKind);
+            assert.equal(token.text, expectedText);
+            if (expectedValue) assert.equal(token.value, expectedValue);
             current = next();
         },
         /**
          * @param {SyntaxKind} expectedKind
          */
         node: (expectedKind) => {
-            assert.equal(expectedKind, current.kind);
+            assert.equal(current.kind, expectedKind);
             current = next();
         },
     };

@@ -16,8 +16,8 @@ const assertToken = (input) => {
         token: (expectedKind, expectedText) => {
             const token = lexer.lex();
 
-            assert.equal(expectedKind, token.kind);
-            if (expectedText) assert.equal(expectedText, token.text);
+            assert.equal(token.kind, expectedKind);
+            if (expectedText) assert.equal(token.text, expectedText);
         }
     };
 };
