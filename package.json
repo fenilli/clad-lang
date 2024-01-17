@@ -7,6 +7,7 @@
   "author": "Gustavo Fenilli <gustavofenilli@gmail.com> (https://github.com/fenilli)",
   "license": "MIT",
   "scripts": {
-    "repl": "node ./repl.js"
+    "repl": "node ./repl.js",
+    "test": "node --test tests/**/*.test.js"
   }
 }
