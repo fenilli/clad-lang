@@ -8,6 +8,7 @@ export { SyntaxToken } from './SyntaxToken.js';
 export { SyntaxTree } from './SyntaxTree.js';
 
 export { ExpressionSyntax } from './ExpressionSyntax.js';
+export { CompilationUnitSyntax } from './CompilationUnitSyntax.js';
 export { UnaryExpressionSyntax } from './UnaryExpressionSyntax.js';
 export { BinaryExpressionSyntax } from './BinaryExpressionSyntax.js';
 export { AssignmentExpressionSyntax } from './AssignmentExpressionSyntax.js';

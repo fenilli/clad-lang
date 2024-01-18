@@ -30,6 +30,9 @@ export const SyntaxKind = {
     FalseKeyword: 'FalseKeyword',
     TrueKeyword: 'TrueKeyword',
 
+    // Nodes:
+    CompilationUnit: 'CompilationUnit',
+
     // Expressions:
     UnaryExpression: 'UnaryExpression',
     BinaryExpression: 'BinaryExpression',

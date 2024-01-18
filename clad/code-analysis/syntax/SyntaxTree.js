@@ -3,17 +3,16 @@ import { Parser } from './index.js';
 export class SyntaxTree {
     #diagnostics;
     root;
-    endOfFileToken;
 
     /**
-     * @param {import('../DiagnosticBag.js').DiagnosticBag} diagnostics
-     * @param {import('./index.js').ExpressionSyntax} root
-     * @param {import('./index.js').SyntaxToken} endOfFileToken
+     * @param {string} text
      */
-    constructor(diagnostics, root, endOfFileToken) {
-        this.#diagnostics = diagnostics;
+    constructor(text) {
+        const parser = new Parser(text);
+        const root = parser.parseCompilationUnit();
+
+        this.#diagnostics = parser.diagnostics;
         this.root = root;
-        this.endOfFileToken = endOfFileToken;
     };
 
     get diagnostics() {
@@ -24,8 +23,6 @@ export class SyntaxTree {
      * @param {string} text 
      */
     static parse(text) {
-        const parser = new Parser(text);
-
-        return parser.parse();
+        return new SyntaxTree(text);
     };
 };

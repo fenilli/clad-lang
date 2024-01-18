@@ -5,6 +5,7 @@ import {
     SyntaxFacts,
     SyntaxToken,
     SyntaxTree,
+    CompilationUnitSyntax,
     UnaryExpressionSyntax,
     BinaryExpressionSyntax,
     AssignmentExpressionSyntax,
@@ -72,11 +73,11 @@ export class Parser {
         return this.#peek(0);
     };
 
-    parse() {
+    parseCompilationUnit() {
         const expression = this.#parseExpression();
         const endOfFileToken = this.#matchToken(SyntaxKind.EndOfFileToken);
 
-        return new SyntaxTree(this.#diagnostics, expression, endOfFileToken);
+        return new CompilationUnitSyntax(expression, endOfFileToken);
     };
 
     #parseExpression() {

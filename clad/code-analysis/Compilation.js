@@ -17,7 +17,7 @@ export class Compilation {
      */
     evaluate(variables) {
         const binder = new Binder(variables);
-        const boundExpression = binder.bindExpression(this.#syntax.root);
+        const boundExpression = binder.bindExpression(this.#syntax.root.expression);
 
         const diagnostics = this.#syntax.diagnostics.concat(binder.diagnostics);
 
