@@ -65,7 +65,7 @@ export class Parser {
         if (this.#current.kind === kind) return this.#nextToken();
 
         this.#diagnostics.reportUnexpectedToken(this.#current.span, this.#current.kind, kind);
-        return new SyntaxToken(kind, this.#current.position, '', null);
+        return new SyntaxToken(kind, '', null, this.#current.span);
     };
 
     get #current() {

@@ -23,7 +23,7 @@ export class DiagnosticBag {
     };
 
     /**
-     * @param {import('./TextSpan.js').TextSpan} span
+     * @param {import('./text/TextSpan.js').TextSpan} span
      * @param {string} message
      */
     #report(span, message) {
@@ -32,7 +32,7 @@ export class DiagnosticBag {
     };
 
     /**
-     * @param {import('./TextSpan.js').TextSpan} span
+     * @param {import('./text/TextSpan.js').TextSpan} span
      * @param {string} text
      * @param {string} type
      */
@@ -42,7 +42,7 @@ export class DiagnosticBag {
     };
 
     /**
-     * @param {import('./TextSpan.js').TextSpan} span
+     * @param {import('./text/TextSpan.js').TextSpan} span
      * @param {string} character
      */
     reportBadCharacter(span, character) {
@@ -51,7 +51,7 @@ export class DiagnosticBag {
     };
 
     /**
-     * @param {import('./TextSpan.js').TextSpan} span
+     * @param {import('./text/TextSpan.js').TextSpan} span
      * @param {string} actualKind
      * @param {string} expectedKind
      */
@@ -61,7 +61,7 @@ export class DiagnosticBag {
     };
 
     /**
-     * @param {import('./TextSpan.js').TextSpan} span
+     * @param {import('./text/TextSpan.js').TextSpan} span
      * @param {string} operatorText
      * @param {string} operandType
      */
@@ -71,7 +71,7 @@ export class DiagnosticBag {
     };
 
     /**
-     * @param {import('./TextSpan.js').TextSpan} span
+     * @param {import('./text/TextSpan.js').TextSpan} span
      * @param {string} operatorText
      * @param {string} leftType
      * @param {string} rightType
@@ -82,7 +82,7 @@ export class DiagnosticBag {
     };
 
     /**
-     * @param {import('./TextSpan.js').TextSpan} span
+     * @param {import('./text/TextSpan.js').TextSpan} span
      * @param {string} name
      */
     reportUndefinedName(span, name) {

@@ -1,4 +1,4 @@
-import { TextSpan } from "./TextSpan.js";
+import { TextSpan } from "./text/TextSpan.js";
 
 export class Diagnostic {
     span;

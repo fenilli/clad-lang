@@ -1,5 +1,5 @@
 import { DiagnosticBag } from '../DiagnosticBag.js';
-import { TextSpan } from '../TextSpan.js';
+import { TextSpan } from '../text/TextSpan.js';
 import { SyntaxFacts, SyntaxKind, SyntaxToken } from './index.js';
 
 /**
@@ -31,7 +31,10 @@ function isLetter(string) {
 
 export class Lexer {
     #text = '';
+
     #position = 0;
+    #line = 1;
+    #column = 0;
 
     /** @type {DiagnosticBag} */
     #diagnostics = new DiagnosticBag();
@@ -65,105 +68,122 @@ export class Lexer {
         return this.#peek(1);
     };
 
+    /**
+     * @param {number} amount 
+     */
+    #stepBy(amount) {
+        const before = this.#position;
+
+        this.#position += amount;
+        this.#column += amount;
+
+        return before;
+    };
+
     #next() {
-        this.#position++;
+        return this.#stepBy(1);
+    };
+
+    /**
+     * @param {number} start
+     */
+    #generateTextSpan(start) {
+        return new TextSpan(start, this.#position, this.#line, this.#column);
     };
 
     /**
      * @returns {SyntaxToken}
      */
     lex() {
-        if (this.#position >= this.#text.length) return new SyntaxToken(SyntaxKind.EndOfFileToken, this.#position, '\0', null);
+        const start = this.#position;
+
+        if (this.#position >= this.#text.length) return new SyntaxToken(SyntaxKind.EndOfFileToken, '\0', null, this.#generateTextSpan(start));
 
         if (isNumber(this.#current)) {
-            const start = this.#position;
-
             while (isNumber(this.#current)) this.#next();
 
             const text = this.#text.slice(start, this.#position);
             const value = parseInt(text);
 
             if (!value) {
-                this.#diagnostics.reportInvalidNumber(new TextSpan(start, this.#position - start), text, 'number');
+                this.#diagnostics.reportInvalidNumber(this.#generateTextSpan(start), text, 'number');
             };
 
-            return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
+            return new SyntaxToken(SyntaxKind.NumberToken, text, value, this.#generateTextSpan(start));
         };
 
         if (isWhitespace(this.#current)) {
-            const start = this.#position;
+            while (isWhitespace(this.#current)) {
+                switch (this.#current) {
+                    case '\n': case '\r': {
+                        this.#line++;
+                        this.#column = 0;
 
-            while (isWhitespace(this.#current)) this.#next();
+                        break;
+                    }
+                };
+
+                this.#next();
+            };
 
             const text = this.#text.slice(start, this.#position);
 
-            return new SyntaxToken(SyntaxKind.WhitespaceToken, start, text, null);
+            return new SyntaxToken(SyntaxKind.WhitespaceToken, text, null, this.#generateTextSpan(start));
         };
 
         if (isLetter(this.#current)) {
-            const start = this.#position;
-
             while (isLetter(this.#current)) this.#next();
 
             const text = this.#text.slice(start, this.#position);
             const kind = SyntaxFacts.getKeywordKind(text);
-            return new SyntaxToken(kind, start, text, null);
+            return new SyntaxToken(kind, text, null, this.#generateTextSpan(start));
         };
 
         switch (this.#current) {
-            case '+': return new SyntaxToken(SyntaxKind.PlusToken, this.#position++, '+', null);
-            case '-': return new SyntaxToken(SyntaxKind.MinusToken, this.#position++, '-', null);
-            case '*': return new SyntaxToken(SyntaxKind.StarToken, this.#position++, '*', null);
-            case '/': return new SyntaxToken(SyntaxKind.SlashToken, this.#position++, '/', null);
-            case '(': return new SyntaxToken(SyntaxKind.OpenParenthesisToken, this.#position++, '(', null);
-            case ')': return new SyntaxToken(SyntaxKind.CloseParenthesisToken, this.#position++, ')', null);
+            case '+': return new SyntaxToken(SyntaxKind.PlusToken, '+', null, this.#generateTextSpan(this.#next()));
+            case '-': return new SyntaxToken(SyntaxKind.MinusToken, '-', null, this.#generateTextSpan(this.#next()));
+            case '*': return new SyntaxToken(SyntaxKind.StarToken, '*', null, this.#generateTextSpan(this.#next()));
+            case '/': return new SyntaxToken(SyntaxKind.SlashToken, '/', null, this.#generateTextSpan(this.#next()));
+            case '(': return new SyntaxToken(SyntaxKind.OpenParenthesisToken, '(', null, this.#generateTextSpan(this.#next()));
+            case ')': return new SyntaxToken(SyntaxKind.CloseParenthesisToken, ')', null, this.#generateTextSpan(this.#next()));
             case '&': {
-                const start = this.#position;
-
                 if (this.#lookahead === '&') {
-                    this.#position += 2;
-                    return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, start, '&&', null);
+                    this.#stepBy(2);
+                    return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, '&&', null, this.#generateTextSpan(start));
                 };
 
                 break;
             }
             case '|': {
-                const start = this.#position;
-
                 if (this.#lookahead === '|') {
-                    this.#position += 2;
-                    return new SyntaxToken(SyntaxKind.PipePipeToken, start, '||', null);
+                    this.#stepBy(2);
+                    return new SyntaxToken(SyntaxKind.PipePipeToken, '||', null, this.#generateTextSpan(start));
                 };
 
                 break;
             }
             case '=': {
-                const start = this.#position;
-
                 if (this.#lookahead === '=') {
-                    this.#position += 2;
-                    return new SyntaxToken(SyntaxKind.EqualsEqualsToken, start, '==', null);
+                    this.#stepBy(2);
+                    return new SyntaxToken(SyntaxKind.EqualsEqualsToken, '==', null, this.#generateTextSpan(start));
                 };
 
-                return new SyntaxToken(SyntaxKind.EqualsToken, this.#position++, '=', null);
+                return new SyntaxToken(SyntaxKind.EqualsToken, '=', null, this.#generateTextSpan(this.#next()));
             }
             case '!': {
-                const start = this.#position;
-
                 if (this.#lookahead === '=') {
-                    this.#position += 2;
-                    return new SyntaxToken(SyntaxKind.BangEqualsToken, start, '!=', null);
+                    this.#stepBy(2);
+                    return new SyntaxToken(SyntaxKind.BangEqualsToken, '!=', null, this.#generateTextSpan(start));
                 };
 
-                return new SyntaxToken(SyntaxKind.BangToken, this.#position++, '!', null);
+                return new SyntaxToken(SyntaxKind.BangToken, '!', null, this.#generateTextSpan(this.#next()));
             }
         };
 
-        const start = this.#position;
         this.#next();
         const text = this.#text.slice(start, this.#position);
 
-        this.#diagnostics.reportBadCharacter(new TextSpan(start, 1), text);
-        return new SyntaxToken(SyntaxKind.BadToken, start, text, null);
+        this.#diagnostics.reportBadCharacter(this.#generateTextSpan(start), text);
+        return new SyntaxToken(SyntaxKind.BadToken, text, null, this.#generateTextSpan(start));
     };
 };

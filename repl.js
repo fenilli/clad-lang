@@ -61,7 +61,7 @@ function processInput() {
         } else {
             for (const diagnostic of diagnostics) {
                 process.stdout.write('\n\x1b[38;2;255;0;0m');
-                console.log(diagnostic.message);
+                console.log(`(${diagnostic.span.line}, ${diagnostic.span.column}): ${diagnostic.message}`);
                 process.stdout.write('\x1b[0m');
 
                 const prefix = line.substring(0, diagnostic.span.start);
