@@ -89,4 +89,14 @@ export class DiagnosticBag {
         const message = `Variable '${name}' doesn't exist.`;
         this.#report(span, message);
     };
+
+    /**
+     * @param {import('./text/TextSpan.js').TextSpan} span
+     * @param {string} fromType
+     * @param {string} toType
+     */
+    reportCannotConvert(span, fromType, toType) {
+        const message = `Cannot convert type <${fromType}> to <${toType}>.`;
+        this.#report(span, message);
+    };
 };

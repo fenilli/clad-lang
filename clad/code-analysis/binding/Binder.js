@@ -1,5 +1,7 @@
 import { DiagnosticBag } from '../DiagnosticBag.js';
 import { VariableSymbol } from '../VariableSymbol.js';
+import { BoundGlobalScope } from './BoundGlobalScope.js';
+import { BoundScope } from './BoundScope.js';
 import { SyntaxKind } from '../syntax/index.js';
 import {
     BoundUnaryOperator,
@@ -12,16 +14,57 @@ import {
 } from './index.js';
 
 export class Binder {
-    #variables;
+    #scope;
 
     /** @type {DiagnosticBag} */
     #diagnostics = new DiagnosticBag();
 
     /**
-     * @param {Map<VariableSymbol, any>} variables
+     * @param {BoundScope | null} parent
      */
-    constructor(variables) {
-        this.#variables = variables;
+    constructor(parent) {
+        this.#scope = new BoundScope(parent);
+    };
+
+    /**
+     * @param {BoundGlobalScope | null} previous
+     */
+    static createParentScopes(previous) {
+        const stack = [];
+
+        while (previous !== null) {
+            stack.push(previous);
+            previous = previous.previous;
+        };
+
+        /** @type {BoundScope | null} */
+        let parent = null;
+        while (stack.length > 0) {
+            const global = stack.pop();
+            const scope = new BoundScope(parent);
+
+            for (const variable of global?.variables || []) {
+                scope.tryDeclare(variable);
+            };
+
+            parent = scope;
+        };
+
+        return parent;
+    };
+
+    /**
+     * @param {BoundGlobalScope | null} previous
+     * @param {import('../syntax/index.js').CompilationUnitSyntax} syntax
+     */
+    static bindGlobalScope(previous, syntax) {
+        const parentScope = Binder.createParentScopes(previous);
+        const binder = new Binder(parentScope);
+        const expression = binder.bindExpression(syntax.expression);
+        const variables = binder.#scope.getDeclaredVariables();
+        const diagnostics = binder.#diagnostics;
+
+        return new BoundGlobalScope(previous, diagnostics, variables, expression);
     };
 
     get diagnostics() {
@@ -67,12 +110,17 @@ export class Binder {
     #bindAssignmentExpression(syntax) {
         const name = syntax.identifierToken.text;
         const boundExpression = this.bindExpression(syntax.expression);
-        const existingVariable = Array.from(this.#variables.keys()).find((v) => v.name === name);
-        if (typeof existingVariable !== 'undefined')
-            this.#variables.delete(existingVariable);
+        let variable = this.#scope.tryLookup(name);
 
-        const variable = new VariableSymbol(name, boundExpression.type);
-        this.#variables.set(variable, null);
+        if (!variable) {
+            variable = new VariableSymbol(name, boundExpression.type);;
+            this.#scope.tryDeclare(variable);
+        };
+
+        if (boundExpression.type !== variable.type) {
+            this.#diagnostics.reportCannotConvert(syntax.identifierToken.span, boundExpression.type, variable.type);
+            return boundExpression;
+        }
 
         return new BoundAssignmentExpression(variable, boundExpression);
     };
@@ -105,9 +153,9 @@ export class Binder {
      */
     #bindNameExpression(syntax) {
         const name = syntax.identifierToken.text;
-        const variable = Array.from(this.#variables.keys()).find((v) => v.name === name);
+        const variable = this.#scope.tryLookup(name);
 
-        if (typeof variable === 'undefined') {
+        if (variable === null) {
             this.#diagnostics.reportUndefinedName(syntax.identifierToken.span, name);
             return new BoundLiteralExpression(0);
         };

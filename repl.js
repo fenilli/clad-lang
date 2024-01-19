@@ -34,6 +34,9 @@ function prettyPrint(node, indent = '', isLast = true) {
 let debug = false;
 const variables = new Map();
 
+/** @type {Compilation | null} */
+let previous = null;
+
 function processInput() {
     rl.question('> ', (line) => {
         if (line === '#debug') {
@@ -44,10 +47,14 @@ function processInput() {
         } else if (line === '#clear') {
             process.stdout.write('\u001Bc');
             return processInput();
+        } else if (line === '#reset') {
+            process.stdout.write('Scope cleared!\n');
+            previous = null;
+            return processInput();
         };
 
         const syntaxTree = SyntaxTree.parse(line);
-        const compilation = new Compilation(syntaxTree);
+        const compilation = previous === null ? new Compilation(syntaxTree) : previous.continueWith(syntaxTree);
         const { diagnostics, value } = compilation.evaluate(variables);
 
         if (debug) {
@@ -58,6 +65,7 @@ function processInput() {
 
         if (diagnostics.length === 0) {
             process.stdout.write(`\x1b[38;2;255;255;0m${value}\x1b[0m\n`);
+            previous = compilation;
         } else {
             for (const diagnostic of diagnostics) {
                 process.stdout.write('\n\x1b[38;2;255;0;0m');
