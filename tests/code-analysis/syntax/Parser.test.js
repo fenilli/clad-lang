@@ -23,7 +23,7 @@ const flatten = (node, result = []) => {
  */
 const assertTree = (input) => {
     const syntaxTree = SyntaxTree.parse(input);
-    const nodes = flatten(syntaxTree.root);
+    const nodes = flatten(syntaxTree.root.expression);
 
     let cursor = 0;
 
